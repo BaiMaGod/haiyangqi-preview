@@ -88,7 +88,9 @@ function tileMarkup(piece) {
   }
   const species = getSpecies(piece);
   return `
-    <span class="piece-icon" aria-hidden="true">${species.icon}</span>
+    <span class="piece-art-wrap" aria-hidden="true">
+      <img class="piece-art" src="${species.art}" alt="" draggable="false" decoding="async" />
+    </span>
     <span class="piece-name">${species.name}</span>
     <span class="piece-rank">${species.rank}</span>
   `;
@@ -110,7 +112,7 @@ function renderBoard() {
 function renderLegend() {
   const legend = document.querySelector('#legend');
   legend.innerHTML = SPECIES.map(
-    (species) => `<div class="legend-item"><span>${species.icon}</span><b>${species.rank}</b><small>${species.name}</small></div>`,
+    (species) => `<div class="legend-item"><img class="legend-art" src="${species.art}" alt="" draggable="false" loading="lazy" /><b>${species.rank}</b><small>${species.name}</small></div>`,
   ).join('');
 }
 

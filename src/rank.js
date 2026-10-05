@@ -5,8 +5,11 @@ const RANK_NAMES = [
   '棋宗', '大棋宗', '棋尊', '大棋尊', '棋圣', '大棋圣', '棋帝', '大棋帝', '棋神', '大棋神',
 ];
 
-// 每个段位晋级到下一段所需的“净胜点”。前期严格 1/2/4/8，后续继续递增但不无限翻倍。
-export const PROMOTION_WINS = [
+// 每个段位晋级到下一段所需的净胜点严格翻倍：1, 2, 4, 8 ... 262144。
+export const PROMOTION_WINS = Array.from({ length: RANK_NAMES.length - 1 }, (_, index) => 2 ** index);
+
+// V1.3 曾短暂使用非严格翻倍门槛，仅用于把已有本地存档迁移到 V1.4。
+const V13_PROMOTION_WINS = [
   1, 2, 4, 8, 12, 16, 24, 32, 40, 50, 60, 75, 90, 110, 130, 150, 175, 200, 250,
 ];
 
@@ -35,6 +38,7 @@ export const RANKS = RANK_NAMES.map((name, index) => ({
 }));
 
 export const DEFAULT_RANK_PROFILE = Object.freeze({
+  rankSchemaVersion: 2,
   rankPoints: 0,
   winStreak: 0,
   protectionMatches: 0,
@@ -101,14 +105,36 @@ function legacyExpToPoints(raw) {
   return rank.threshold + Math.floor(rank.winsToNext * fraction);
 }
 
+function migrateV13Points(rawPoints) {
+  const legacyThresholds = [0];
+  for (const need of V13_PROMOTION_WINS) {
+    legacyThresholds.push(legacyThresholds[legacyThresholds.length - 1] + need);
+  }
+  const points = clamp(int(rawPoints), 0, legacyThresholds[legacyThresholds.length - 1]);
+  let rankIndex = 0;
+  for (let i = 1; i < legacyThresholds.length; i += 1) {
+    if (points >= legacyThresholds[i]) rankIndex = i;
+    else break;
+  }
+  if (rankIndex >= RANKS.length - 1) return MAX_RANK_POINTS;
+
+  const oldFloor = legacyThresholds[rankIndex];
+  const oldNeed = V13_PROMOTION_WINS[rankIndex];
+  const fraction = oldNeed ? (points - oldFloor) / oldNeed : 0;
+  const rank = RANKS[rankIndex];
+  return rank.threshold + Math.floor(rank.winsToNext * fraction);
+}
+
 export function normalizeRankProfile(raw = {}) {
-  const rankPoints = clamp(
-    raw.rankPoints == null ? legacyExpToPoints(raw) : int(raw.rankPoints),
-    0,
-    MAX_RANK_POINTS,
-  );
+  let rawPoints;
+  if (raw.rankPoints == null) rawPoints = legacyExpToPoints(raw);
+  else if (int(raw.rankSchemaVersion, 1) < 2) rawPoints = migrateV13Points(raw.rankPoints);
+  else rawPoints = int(raw.rankPoints);
+
+  const rankPoints = clamp(rawPoints, 0, MAX_RANK_POINTS);
   const rankId = getRankIdFromPoints(rankPoints);
   return {
+    rankSchemaVersion: 2,
     rankPoints,
     winStreak: Math.max(0, int(raw.winStreak)),
     protectionMatches: clamp(int(raw.protectionMatches), 0, 2),

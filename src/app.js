@@ -10,8 +10,20 @@ import {
   isAdjacent,
 } from './game.js';
 import { chooseAiAction } from './ai.js';
+import {
+  RANKS,
+  chooseMatchedAiRank,
+  getMatchDifficultyLabel,
+  getRankById,
+  getRankFromProfile,
+  getRankProgress,
+  getRankRecord,
+  normalizeRankProfile,
+  settleRankedMatch,
+} from './rank.js';
 
 const UI_ASSET_BASE = 'assets/ui';
+const RANK_STORAGE_KEY = 'haiyangqi.rank.v1';
 
 const boardEl = document.querySelector('#board');
 const statusEl = document.querySelector('#status');
@@ -27,15 +39,62 @@ const toastEl = document.querySelector('#toast');
 const resultEl = document.querySelector('#result-overlay');
 const resultTitleEl = document.querySelector('#result-title');
 const resultDescEl = document.querySelector('#result-desc');
-const restartButtons = document.querySelectorAll('[data-restart]');
+const resultRankChangeEl = document.querySelector('#result-rank-change');
+const resultExpDeltaEl = document.querySelector('#result-exp-delta');
+const resultExpBreakdownEl = document.querySelector('#result-exp-breakdown');
+const resultRankProgressEl = document.querySelector('#result-rank-progress');
+const resultRankProgressTextEl = document.querySelector('#result-rank-progress-text');
+const resultProtectionEl = document.querySelector('#result-protection');
+const resultRestartButton = document.querySelector('#result-restart');
+const restartButton = document.querySelector('#restart-button');
 const rulesButton = document.querySelector('#rules-button');
 const rulesDialog = document.querySelector('#rules-dialog');
 const closeRulesButton = document.querySelector('#close-rules');
+const rankButton = document.querySelector('#rank-button');
+const rankDialog = document.querySelector('#rank-dialog');
+const closeRankButton = document.querySelector('#close-rank');
+const rankLadderEl = document.querySelector('#rank-ladder');
+const rankNameEl = document.querySelector('#rank-name');
+const rankMetaEl = document.querySelector('#rank-meta');
+const rankProgressEl = document.querySelector('#rank-progress');
+const rankProgressTextEl = document.querySelector('#rank-progress-text');
+const rankRecordEl = document.querySelector('#rank-record');
+const rankProtectionEl = document.querySelector('#rank-protection');
+const aiRankNameEl = document.querySelector('#ai-rank-name');
+const aiMatchTypeEl = document.querySelector('#ai-match-type');
+const rankDialogSummaryEl = document.querySelector('#rank-dialog-summary');
 
 let state = createInitialState();
 let selected = null;
 let aiTimer = null;
 let toastTimer = null;
+let rankProfile = loadRankProfile();
+let matchPlayerRankId = getRankFromProfile(rankProfile).id;
+let matchAiRankId = chooseMatchedAiRank(matchPlayerRankId);
+let matchSettled = false;
+let rankSettlement = null;
+
+function loadRankProfile() {
+  try {
+    const raw = localStorage.getItem(RANK_STORAGE_KEY);
+    return normalizeRankProfile(raw ? JSON.parse(raw) : {});
+  } catch (error) {
+    console.warn('段位数据读取失败，已使用默认数据。', error);
+    return normalizeRankProfile({});
+  }
+}
+
+function saveRankProfile() {
+  try {
+    localStorage.setItem(RANK_STORAGE_KEY, JSON.stringify(rankProfile));
+  } catch (error) {
+    console.warn('段位数据保存失败。', error);
+  }
+}
+
+function signed(value) {
+  return value > 0 ? `+${value}` : `${value}`;
+}
 
 function factionName(faction) {
   return faction ? FACTIONS[faction].name : '等待首翻';
@@ -54,11 +113,11 @@ function countFactionByReveal(faction, revealed) {
 function getStatusText() {
   if (state.winner) {
     const humanWon = state.winner === state.humanFaction;
-    return humanWon ? '你赢了！海域已被你控制。' : 'AI 获胜，再来一局？';
+    return humanWon ? '你赢了！段位经验已经结算。' : 'AI 获胜，本局段位经验已经结算。';
   }
   if (state.draw) return `和棋：${state.drawReason}`;
   if (!state.humanFaction) return '翻开任意暗牌，它的阵营就是你的阵营。';
-  if (state.turn === 'ai') return 'AI 正在思考……';
+  if (state.turn === 'ai') return `${getRankById(matchAiRankId).name} AI 正在思考……`;
   const revealedOwn = countFactionByReveal(state.humanFaction, true);
   const hiddenOwn = countFactionByReveal(state.humanFaction, false);
   if (revealedOwn === 0 && hiddenOwn > 0) {
@@ -118,24 +177,113 @@ function renderLegend() {
   ).join('');
 }
 
+function renderRankPanel() {
+  const rank = getRankFromProfile(rankProfile);
+  const progress = getRankProgress(rankProfile);
+  const record = getRankRecord(rankProfile);
+  const highest = getRankById(rankProfile.highestRankId);
+  const aiRank = getRankById(matchAiRankId);
+  const matchType = getMatchDifficultyLabel(matchPlayerRankId, matchAiRankId);
+
+  rankNameEl.textContent = rank.name;
+  rankMetaEl.textContent = `历史最高 ${highest.name}`;
+  rankProgressEl.style.width = `${Math.round(progress.percent * 100)}%`;
+  rankProgressTextEl.textContent = progress.isPeak
+    ? `巅峰经验 ${progress.current} / ${progress.max}`
+    : `${progress.current} / ${progress.max} EXP`;
+  rankRecordEl.textContent = `胜 ${record.wins} · 负 ${record.losses} · 和 ${record.draws} · 胜率 ${Math.round(record.winRate * 100)}%`;
+  rankProtectionEl.textContent = rankProfile.protectionMatches > 0 ? `晋级保护 ${rankProfile.protectionMatches} 场` : `当前连胜 ${rankProfile.winStreak}`;
+  aiRankNameEl.textContent = `${aiRank.name} AI`;
+  aiMatchTypeEl.textContent = matchType;
+  aiMatchTypeEl.dataset.type = matchType;
+}
+
+function renderRankDialog() {
+  const current = getRankFromProfile(rankProfile);
+  const record = getRankRecord(rankProfile);
+  rankDialogSummaryEl.textContent = `当前 ${current.name} · 历史最高 ${getRankById(rankProfile.highestRankId).name} · ${record.wins}胜 ${record.losses}负 ${record.draws}和`;
+  rankLadderEl.innerHTML = [...RANKS]
+    .reverse()
+    .map((rank) => {
+      const active = rank.id === current.id ? ' active' : '';
+      const reached = rank.id <= rankProfile.highestRankId ? ' reached' : '';
+      const depth = rank.lookaheadDepth === 0 ? '基础判断' : `${rank.lookaheadDepth}层预判`;
+      return `<div class="rank-ladder-item${active}${reached}"><span class="rank-index">${rank.id}</span><strong>${rank.name}</strong><small>AI ${depth} · ${rank.behavior}</small></div>`;
+    })
+    .join('');
+}
+
+function settleMatch(outcome) {
+  if (matchSettled) return rankSettlement;
+  rankSettlement = settleRankedMatch(rankProfile, outcome, matchAiRankId);
+  rankProfile = rankSettlement.profile;
+  matchSettled = true;
+  saveRankProfile();
+  return rankSettlement;
+}
+
+function finalizeEndedMatch() {
+  if (matchSettled || (!state.winner && !state.draw)) return;
+  if (state.draw) {
+    settleMatch('draw');
+    return;
+  }
+  settleMatch(state.winner === state.humanFaction ? 'win' : 'loss');
+}
+
 function renderResult() {
   const ended = state.winner || state.draw;
   resultEl.classList.toggle('show', Boolean(ended));
   if (!ended) return;
 
+  finalizeEndedMatch();
+  const settlement = rankSettlement;
+  const progress = getRankProgress(rankProfile);
+
   if (state.draw) {
     resultTitleEl.textContent = '和棋';
     resultDescEl.textContent = state.drawReason;
-    return;
+  } else {
+    const humanWon = state.winner === state.humanFaction;
+    resultTitleEl.textContent = humanWon ? '你赢了！' : 'AI 获胜';
+    resultDescEl.textContent = humanWon ? '你清空了对手的海洋生物。' : '再来一局，换一种翻牌路线试试。';
   }
 
-  const humanWon = state.winner === state.humanFaction;
-  resultTitleEl.textContent = humanWon ? '你赢了！' : 'AI 获胜';
-  resultDescEl.textContent = humanWon ? '你清空了对手的海洋生物。' : '再来一局，换一种翻牌路线试试。';
+  if (settlement.promoted) {
+    resultRankChangeEl.textContent = `晋级 · ${settlement.oldRank.name} → ${settlement.newRank.name}`;
+    resultRankChangeEl.dataset.change = 'up';
+  } else if (settlement.demoted) {
+    resultRankChangeEl.textContent = `降级 · ${settlement.oldRank.name} → ${settlement.newRank.name}`;
+    resultRankChangeEl.dataset.change = 'down';
+  } else {
+    resultRankChangeEl.textContent = settlement.newRank.name;
+    resultRankChangeEl.dataset.change = 'same';
+  }
+
+  resultExpDeltaEl.textContent = `${signed(settlement.totalDelta)} EXP`;
+  resultExpDeltaEl.dataset.delta = settlement.totalDelta > 0 ? 'up' : settlement.totalDelta < 0 ? 'down' : 'same';
+  const parts = [`基础 ${signed(settlement.baseDelta)}`];
+  if (settlement.streakBonus > 0) parts.push(`连胜奖励 +${settlement.streakBonus}`);
+  resultExpBreakdownEl.textContent = parts.join(' · ');
+  resultRankProgressEl.style.width = `${Math.round(progress.percent * 100)}%`;
+  resultRankProgressTextEl.textContent = progress.isPeak
+    ? `${settlement.newRank.name} · 巅峰 ${progress.current} / ${progress.max}`
+    : `${settlement.newRank.name} · ${progress.current} / ${progress.max}`;
+
+  if (settlement.protectionPreventedDemotion) {
+    resultProtectionEl.textContent = '晋级保护生效：本局未掉段';
+  } else if (settlement.promoted) {
+    resultProtectionEl.textContent = '获得 2 场晋级保护';
+  } else if (rankProfile.protectionMatches > 0) {
+    resultProtectionEl.textContent = `晋级保护剩余 ${rankProfile.protectionMatches} 场`;
+  } else {
+    resultProtectionEl.textContent = rankProfile.winStreak >= 2 ? `🔥 当前 ${rankProfile.winStreak} 连胜` : '';
+  }
 }
 
 function render() {
   renderBoard();
+  renderRankPanel();
   statusEl.textContent = getStatusText();
   turnBadgeEl.textContent = state.turn === 'human' ? '你的回合' : 'AI 回合';
   turnBadgeEl.dataset.turn = state.turn;
@@ -167,7 +315,7 @@ function toast(message) {
   toastEl.textContent = message;
   toastEl.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1500);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1800);
 }
 
 function commitHumanAction(action) {
@@ -237,7 +385,7 @@ function scheduleAi() {
   if (state.turn !== 'ai' || state.winner || state.draw) return;
 
   aiTimer = setTimeout(() => {
-    const action = chooseAiAction(state);
+    const action = chooseAiAction(state, { rankId: matchAiRankId });
     if (!action) return;
     try {
       state = applyAction(state, 'ai', action);
@@ -249,12 +397,28 @@ function scheduleAi() {
   }, 520);
 }
 
-function restart() {
+function startNewMatch() {
   clearTimeout(aiTimer);
   state = createInitialState();
   selected = null;
+  matchSettled = false;
+  rankSettlement = null;
+  matchPlayerRankId = getRankFromProfile(rankProfile).id;
+  matchAiRankId = chooseMatchedAiRank(matchPlayerRankId);
   resultEl.classList.remove('show');
   render();
+}
+
+function handleManualRestart() {
+  if (!state.winner && !state.draw && state.humanFaction && !matchSettled) {
+    const confirmed = window.confirm('当前排位尚未结束，重新开局将按失败结算。确定重新开局吗？');
+    if (!confirmed) return;
+    const settlement = settleMatch('loss');
+    startNewMatch();
+    toast(`已按失败结算 ${signed(settlement.totalDelta)} EXP`);
+    return;
+  }
+  startNewMatch();
 }
 
 boardEl.addEventListener('click', (event) => {
@@ -263,11 +427,20 @@ boardEl.addEventListener('click', (event) => {
   handleTileClick(Number(tile.dataset.index));
 });
 
-restartButtons.forEach((button) => button.addEventListener('click', restart));
+restartButton.addEventListener('click', handleManualRestart);
+resultRestartButton.addEventListener('click', startNewMatch);
 rulesButton.addEventListener('click', () => rulesDialog.showModal());
 closeRulesButton.addEventListener('click', () => rulesDialog.close());
 rulesDialog.addEventListener('click', (event) => {
   if (event.target === rulesDialog) rulesDialog.close();
+});
+rankButton.addEventListener('click', () => {
+  renderRankDialog();
+  rankDialog.showModal();
+});
+closeRankButton.addEventListener('click', () => rankDialog.close());
+rankDialog.addEventListener('click', (event) => {
+  if (event.target === rankDialog) rankDialog.close();
 });
 
 renderLegend();

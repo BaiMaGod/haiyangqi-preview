@@ -7,15 +7,17 @@ export const FACTIONS = {
   abyss: { id: 'abyss', name: '深海队' },
 };
 
+const ART_BASE = 'https://raw.githubusercontent.com/BaiMaGod/haiyangqi/main/assets/pieces';
+
 export const SPECIES = [
-  { type: 'orca', name: '虎鲸', rank: 8, count: 1, icon: '🐋' },
-  { type: 'shark', name: '大白鲨', rank: 7, count: 2, icon: '🦈' },
-  { type: 'seal', name: '海豹', rank: 6, count: 3, icon: '🦭' },
-  { type: 'octopus', name: '章鱼', rank: 5, count: 4, icon: '🐙' },
-  { type: 'puffer', name: '河豚', rank: 4, count: 5, icon: '🐡' },
-  { type: 'fish', name: '小鱼', rank: 3, count: 6, icon: '🐟' },
-  { type: 'shrimp', name: '虾', rank: 2, count: 5, icon: '🦐' },
-  { type: 'barnacle', name: '藤壶', rank: 1, count: 4, icon: '🪸' },
+  { type: 'orca', name: '虎鲸', rank: 8, count: 1, icon: '🐋', art: `${ART_BASE}/orca.webp` },
+  { type: 'shark', name: '大白鲨', rank: 7, count: 2, icon: '🦈', art: `${ART_BASE}/shark.webp` },
+  { type: 'seal', name: '海豹', rank: 6, count: 3, icon: '🦭', art: `${ART_BASE}/seal.webp` },
+  { type: 'octopus', name: '章鱼', rank: 5, count: 4, icon: '🐙', art: `${ART_BASE}/octopus.webp` },
+  { type: 'puffer', name: '河豚', rank: 4, count: 5, icon: '🐡', art: `${ART_BASE}/puffer.webp` },
+  { type: 'fish', name: '小鱼', rank: 3, count: 6, icon: '🐟', art: `${ART_BASE}/fish.webp` },
+  { type: 'shrimp', name: '虾', rank: 2, count: 5, icon: '🦐', art: `${ART_BASE}/shrimp.webp` },
+  { type: 'barnacle', name: '藤壶', rank: 1, count: 4, icon: '🪸', art: `${ART_BASE}/barnacle.webp` },
 ];
 
 const SPECIES_BY_TYPE = Object.fromEntries(SPECIES.map((item) => [item.type, item]));

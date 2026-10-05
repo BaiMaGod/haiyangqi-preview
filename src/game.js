@@ -7,7 +7,7 @@ export const FACTIONS = {
   abyss: { id: 'abyss', name: '深海队' },
 };
 
-const ART_BASE = 'https://raw.githubusercontent.com/BaiMaGod/haiyangqi/main/assets/pieces';
+const ART_BASE = 'assets/pieces';
 
 export const SPECIES = [
   { type: 'orca', name: '虎鲸', rank: 8, count: 1, icon: '🐋', art: `${ART_BASE}/orca.webp` },

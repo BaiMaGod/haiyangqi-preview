@@ -1,0 +1,150 @@
+.rank-panel {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 13px 15px;
+  border: 1px solid rgba(255, 215, 116, .22);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(28, 50, 65, .92), rgba(7, 35, 54, .92));
+  box-shadow: inset 0 0 34px rgba(255, 215, 116, .035), 0 10px 28px rgba(0, 0, 0, .12);
+}
+.rank-emblem {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff2bf;
+  font-size: 24px;
+  font-weight: 900;
+  background: radial-gradient(circle at 34% 28%, #6cc8e8, #164e76 56%, #0a2f4e 100%);
+  border: 2px solid rgba(255, 215, 116, .48);
+  box-shadow: 0 0 0 4px rgba(255, 215, 116, .06), inset 0 1px 8px rgba(255,255,255,.14);
+}
+.rank-main { min-width: 0; }
+.rank-heading { display: flex; align-items: baseline; gap: 9px; margin-bottom: 7px; }
+.rank-heading strong { color: #ffe49a; font-size: 20px; }
+.rank-heading span { color: var(--muted); font-size: 11px; }
+.rank-progress-track {
+  position: relative;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(255,255,255,.075);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.35);
+}
+.rank-progress-track > span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #28acd0, #7be4d0 58%, #ffd774);
+  box-shadow: 0 0 12px rgba(105,230,181,.28);
+  transition: width .45s ease;
+}
+.rank-sub { display: flex; justify-content: space-between; gap: 12px; margin-top: 5px; color: #c1dfec; font-size: 10px; }
+#rank-record { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; }
+.ai-match-card {
+  min-width: 145px;
+  padding: 9px 12px;
+  text-align: right;
+  border-left: 1px solid rgba(255,255,255,.08);
+}
+.ai-match-card small, .ai-match-card span { display: block; }
+.ai-match-card small { color: var(--muted); font-size: 10px; }
+.ai-match-card strong { display: block; margin: 2px 0; font-size: 16px; color: #dff7ff; }
+#ai-match-type { font-size: 10px; color: var(--green); }
+#ai-match-type[data-type="越级挑战"] { color: var(--gold); }
+#ai-match-type[data-type="优势对局"] { color: #8dd1ff; }
+
+.ranked-result-card { width: min(430px, calc(100% - 30px)); }
+.result-rank-box {
+  margin: 16px 0 20px;
+  padding: 14px;
+  text-align: left;
+  border: 1px solid rgba(255,215,116,.16);
+  border-radius: 14px;
+  background: rgba(255,255,255,.035);
+}
+#result-rank-change { display: block; margin-bottom: 10px; text-align: center; font-size: 18px; }
+#result-rank-change[data-change="up"] { color: #ffe08a; }
+#result-rank-change[data-change="down"] { color: #ff9e98; }
+.result-exp-line { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 8px; }
+.result-exp-line span { color: var(--muted); font-size: 11px; }
+#result-exp-delta { font-size: 18px; }
+#result-exp-delta[data-delta="up"] { color: var(--green); }
+#result-exp-delta[data-delta="down"] { color: #ff938c; }
+.result-progress { margin-bottom: 6px; }
+#result-rank-progress-text, #result-protection { display: block; color: var(--muted); font-size: 10px; }
+#result-protection { min-height: 14px; margin-top: 4px; color: #ffe49a; text-align: center; }
+
+.dialog-summary { margin: 3px 0 0; color: var(--muted); font-size: 11px; }
+.rank-dialog { max-height: min(84vh, 760px); }
+.rank-dialog .dialog-head { position: sticky; top: 0; z-index: 2; background: #082238; border-radius: 20px 20px 0 0; }
+.rank-ladder { max-height: 58vh; overflow: auto; padding: 4px 16px 10px; }
+.rank-ladder-item {
+  display: grid;
+  grid-template-columns: 28px 82px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 8px 9px;
+  border-bottom: 1px solid rgba(255,255,255,.055);
+  opacity: .52;
+}
+.rank-ladder-item.reached { opacity: .82; }
+.rank-ladder-item.active {
+  opacity: 1;
+  border: 1px solid rgba(255,215,116,.26);
+  border-radius: 10px;
+  background: rgba(255,215,116,.065);
+}
+.rank-index {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--muted);
+  background: rgba(255,255,255,.055);
+  font-size: 9px;
+  font-weight: 800;
+}
+.rank-ladder-item strong { font-size: 13px; }
+.rank-ladder-item.active strong { color: #ffe49a; }
+.rank-ladder-item small { color: var(--muted); font-size: 10px; line-height: 1.35; }
+
+@media (max-width: 820px) {
+  .rank-panel { grid-template-columns: auto minmax(0,1fr); gap: 10px; padding: 10px; }
+  .rank-emblem { width: 45px; height: 45px; font-size: 19px; }
+  .ai-match-card { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 7px; min-width: 0; padding: 7px 4px 0; border-left: 0; border-top: 1px solid rgba(255,255,255,.07); text-align: center; }
+  .ai-match-card small, .ai-match-card strong, .ai-match-card span { display: inline; margin: 0; }
+  .rank-ladder-item { grid-template-columns: 25px 72px minmax(0, 1fr); padding-inline: 5px; }
+}
+
+@media (max-width: 520px) {
+  .top-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  #restart-button { grid-column: 1 / -1; }
+  .rank-panel { margin-bottom: 8px; }
+  .rank-heading strong { font-size: 17px; }
+  .rank-heading span { font-size: 9px; }
+  .rank-sub, #rank-record { font-size: 9px; }
+  .ai-match-card strong { font-size: 13px; }
+  .rank-ladder { padding-inline: 10px; }
+  .rank-ladder-item { grid-template-columns: 24px 66px minmax(0,1fr); gap: 5px; }
+  .rank-ladder-item small { font-size: 9px; }
+}
+
+@media (orientation: landscape) and (max-height: 620px) {
+  .rank-panel { padding: 5px 8px; margin-bottom: 5px; grid-template-columns: auto minmax(0,1fr) auto; }
+  .rank-emblem { width: 34px; height: 34px; font-size: 15px; }
+  .rank-heading { margin-bottom: 3px; }
+  .rank-heading strong { font-size: 14px; }
+  .rank-progress-track { height: 5px; }
+  .rank-sub, #rank-record { margin-top: 2px; font-size: 8px; }
+  .ai-match-card { grid-column: auto; display: block; border-top: 0; border-left: 1px solid rgba(255,255,255,.07); padding: 3px 8px; text-align: right; }
+  .ai-match-card small, .ai-match-card strong, .ai-match-card span { display: block; }
+  .ai-match-card strong { font-size: 12px; }
+  .board-wrap { width: min(100%, calc((100svh - 198px) * 10 / 6)); }
+}

@@ -24,6 +24,9 @@ import {
 
 const UI_ASSET_BASE = 'assets/ui';
 const RANK_STORAGE_KEY = 'haiyangqi.rank.v1';
+const REVEAL_FX_DURATION = 860;
+const DEFAULT_AI_DELAY = 520;
+const REVEAL_AI_DELAY = 900;
 
 const boardEl = document.querySelector('#board');
 const statusEl = document.querySelector('#status');
@@ -64,10 +67,37 @@ const aiRankNameEl = document.querySelector('#ai-rank-name');
 const aiMatchTypeEl = document.querySelector('#ai-match-type');
 const rankDialogSummaryEl = document.querySelector('#rank-dialog-summary');
 
+const revealFxEl = document.createElement('div');
+revealFxEl.className = 'reveal-fx';
+revealFxEl.setAttribute('aria-hidden', 'true');
+revealFxEl.innerHTML = `
+  <div class="reveal-fx-vignette"></div>
+  <div class="reveal-fx-rays"></div>
+  <div class="reveal-fx-ring ring-a"></div>
+  <div class="reveal-fx-ring ring-b"></div>
+  <div class="reveal-fx-core">
+    <div class="reveal-fx-ghost" aria-hidden="true"></div>
+    <img class="reveal-fx-art" alt="" draggable="false" decoding="async" />
+    <div class="reveal-fx-copy">
+      <span class="reveal-fx-kicker"></span>
+      <strong class="reveal-fx-name"></strong>
+      <span class="reveal-fx-rank"></span>
+    </div>
+  </div>
+`;
+document.body.appendChild(revealFxEl);
+
+const revealFxArtEl = revealFxEl.querySelector('.reveal-fx-art');
+const revealFxGhostEl = revealFxEl.querySelector('.reveal-fx-ghost');
+const revealFxKickerEl = revealFxEl.querySelector('.reveal-fx-kicker');
+const revealFxNameEl = revealFxEl.querySelector('.reveal-fx-name');
+const revealFxRankEl = revealFxEl.querySelector('.reveal-fx-rank');
+
 let state = createInitialState();
 let selected = null;
 let aiTimer = null;
 let toastTimer = null;
+let revealFxTimer = null;
 let rankProfile = loadRankProfile();
 let matchPlayerRankId = getRankFromProfile(rankProfile).id;
 let matchAiRankId = chooseMatchedAiRank(matchPlayerRankId);
@@ -168,6 +198,13 @@ function renderBoard() {
       return `<button class="${tileClasses(piece, index)}" data-index="${index}" aria-label="${label}">${tileMarkup(piece)}</button>`;
     })
     .join('');
+}
+
+function preloadRevealAssets() {
+  SPECIES.forEach((species) => {
+    const image = new Image();
+    image.src = species.art;
+  });
 }
 
 function renderLegend() {
@@ -317,17 +354,57 @@ function toast(message) {
   toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1800);
 }
 
+function showRevealFx(index, piece, actor) {
+  if (!piece) return;
+  const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) return;
+
+  const species = getSpecies(piece);
+  const tile = boardEl.querySelector(`[data-index="${index}"]`);
+  const rect = tile?.getBoundingClientRect();
+  const originX = rect ? rect.left + rect.width / 2 - window.innerWidth / 2 : 0;
+  const originY = rect ? rect.top + rect.height / 2 - window.innerHeight / 2 : 0;
+
+  revealFxEl.style.setProperty('--origin-x', `${originX}px`);
+  revealFxEl.style.setProperty('--origin-y', `${originY}px`);
+  revealFxEl.dataset.faction = piece.faction;
+  revealFxArtEl.src = species.art;
+  revealFxGhostEl.style.backgroundImage = `url("${species.art}")`;
+  revealFxKickerEl.textContent = actor === 'ai' ? 'AI 翻出了' : '你翻出了';
+  revealFxNameEl.textContent = species.name;
+  revealFxRankEl.textContent = `${FACTIONS[piece.faction].name} · ${species.rank}级`;
+
+  revealFxEl.classList.remove('show');
+  void revealFxEl.offsetWidth;
+  revealFxEl.classList.add('show');
+
+  tile?.classList.remove('just-revealed');
+  void tile?.offsetWidth;
+  tile?.classList.add('just-revealed');
+
+  clearTimeout(revealFxTimer);
+  revealFxTimer = setTimeout(() => {
+    revealFxEl.classList.remove('show');
+    tile?.classList.remove('just-revealed');
+  }, REVEAL_FX_DURATION);
+}
+
 function commitHumanAction(action) {
+  const revealPiece = action.type === 'reveal' ? state.board[action.index] : null;
   try {
     state = applyAction(state, 'human', action);
     selected = null;
     render();
-    scheduleAi();
+    if (revealPiece) {
+      showRevealFx(action.index, revealPiece, 'human');
+      scheduleAi(REVEAL_AI_DELAY);
+    } else {
+      scheduleAi();
+    }
   } catch (error) {
     toast(error.message);
   }
 }
-
 function handleTileClick(index) {
   if (state.turn !== 'human' || state.winner || state.draw) return;
   const piece = state.board[index];
@@ -379,25 +456,29 @@ function handleTileClick(index) {
   else toast('请选择己方棋子，或继续翻牌');
 }
 
-function scheduleAi() {
+function scheduleAi(delay = DEFAULT_AI_DELAY) {
   clearTimeout(aiTimer);
   if (state.turn !== 'ai' || state.winner || state.draw) return;
 
   aiTimer = setTimeout(() => {
     const action = chooseAiAction(state, { rankId: matchAiRankId });
     if (!action) return;
+    const revealPiece = action.type === 'reveal' ? state.board[action.index] : null;
     try {
       state = applyAction(state, 'ai', action);
       render();
+      if (revealPiece) showRevealFx(action.index, revealPiece, 'ai');
     } catch (error) {
       console.error(error);
       toast('AI 行动异常，请重新开始');
     }
-  }, 520);
+  }, delay);
 }
 
 function startNewMatch() {
   clearTimeout(aiTimer);
+  clearTimeout(revealFxTimer);
+  revealFxEl.classList.remove('show');
   state = createInitialState();
   selected = null;
   matchSettled = false;
@@ -442,5 +523,6 @@ rankDialog.addEventListener('click', (event) => {
   if (event.target === rankDialog) rankDialog.close();
 });
 
+preloadRevealAssets();
 renderLegend();
 render();

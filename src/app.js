@@ -11,6 +11,8 @@ import {
 } from './game.js';
 import { chooseAiAction } from './ai.js';
 
+const UI_ASSET_BASE = 'https://raw.githubusercontent.com/BaiMaGod/haiyangqi/main/assets/ui';
+
 const boardEl = document.querySelector('#board');
 const statusEl = document.querySelector('#status');
 const turnBadgeEl = document.querySelector('#turn-badge');
@@ -84,7 +86,7 @@ function tileClasses(piece, index) {
 function tileMarkup(piece) {
   if (!piece) return '<span class="empty-dot">·</span>';
   if (!piece.revealed) {
-    return '<span class="shell-mark" aria-hidden="true">◒</span><span class="sr-only">未翻开的棋子</span>';
+    return `<img class="hidden-art" src="${UI_ASSET_BASE}/hidden.webp" alt="" draggable="false" decoding="async" /><span class="sr-only">未翻开的棋子</span>`;
   }
   const species = getSpecies(piece);
   return `

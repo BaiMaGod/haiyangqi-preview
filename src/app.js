@@ -24,9 +24,9 @@ import {
 
 const UI_ASSET_BASE = 'assets/ui';
 const RANK_STORAGE_KEY = 'haiyangqi.rank.v1';
-const REVEAL_FX_DURATION = 860;
+const REVEAL_FX_DURATION = 720;
 const DEFAULT_AI_DELAY = 520;
-const REVEAL_AI_DELAY = 900;
+const REVEAL_AI_DELAY = 780;
 
 const boardEl = document.querySelector('#board');
 const statusEl = document.querySelector('#status');

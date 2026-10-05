@@ -1,24 +1,33 @@
-export const RANK_STEP_EXP = 100;
-export const MAX_RANK_EXP = 1900;
-export const MAX_PEAK_EXP = 100;
+export const MAX_PEAK_POINTS = 9999;
 
 const RANK_NAMES = [
   '棋士', '大棋士', '棋师', '大棋师', '棋灵', '大棋灵', '棋王', '大棋王', '棋皇', '大棋皇',
   '棋宗', '大棋宗', '棋尊', '大棋尊', '棋圣', '大棋圣', '棋帝', '大棋帝', '棋神', '大棋神',
 ];
-const DEPTHS = [0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4];
-const ERRORS = [0.35, 0.30, 0.26, 0.22, 0.18, 0.15, 0.13, 0.11, 0.09, 0.08, 0.07, 0.06, 0.05, 0.045, 0.04, 0.035, 0.03, 0.025, 0.02, 0.01];
-const BEHAVIORS = [
-  '基础行动', '优先吃子', '判断棋子价值', '避免立即反吃', '统计关键棋子', '重视站位', '保护虎鲸', '计算简单交换',
-  '识别两步战术', '诱敌与封锁', '按剩余棋力调整策略', '估算暗牌期望', '处理连续威胁', '强化风险控制',
-  '计算多步交换', '稳定概率评估', '主动战术牺牲', '强化残局封锁', '接近最优决策', '最高综合策略',
+
+// 每个段位晋级到下一段所需的“净胜点”。前期严格 1/2/4/8，后续继续递增但不无限翻倍。
+export const PROMOTION_WINS = [
+  1, 2, 4, 8, 12, 16, 24, 32, 40, 50, 60, 75, 90, 110, 130, 150, 175, 200, 250,
 ];
+
+const DEPTHS = [0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5];
+const ERRORS = [0.45, 0.40, 0.36, 0.32, 0.28, 0.24, 0.21, 0.18, 0.15, 0.13, 0.11, 0.09, 0.075, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01, 0];
+const BEHAVIORS = [
+  '认识合法行动', '更偏好直接吃子', '开始判断棋子价值', '开始规避立即反吃', '统计关键高价值棋子',
+  '重视局部站位', '保护虎鲸并追踪藤壶', '计算简单交换', '识别两步战术', '主动诱敌与封锁',
+  '根据剩余棋力调整攻守', '估算暗牌期望价值', '处理连续威胁', '强化风险控制', '计算多步交换',
+  '稳定概率评估', '主动战术牺牲', '强化残局封锁', '深度战术与残局搜索', '最高综合策略',
+];
+
+const thresholds = [0];
+for (const need of PROMOTION_WINS) thresholds.push(thresholds[thresholds.length - 1] + need);
+export const MAX_RANK_POINTS = thresholds[thresholds.length - 1];
 
 export const RANKS = RANK_NAMES.map((name, index) => ({
   id: index + 1,
   name,
-  threshold: index * RANK_STEP_EXP,
-  expToNext: index === RANK_NAMES.length - 1 ? null : RANK_STEP_EXP,
+  threshold: thresholds[index],
+  winsToNext: index === RANK_NAMES.length - 1 ? null : PROMOTION_WINS[index],
   aiLevel: index + 1,
   lookaheadDepth: DEPTHS[index],
   errorRate: ERRORS[index],
@@ -26,14 +35,14 @@ export const RANKS = RANK_NAMES.map((name, index) => ({
 }));
 
 export const DEFAULT_RANK_PROFILE = Object.freeze({
-  rankExp: 0,
+  rankPoints: 0,
   winStreak: 0,
   protectionMatches: 0,
   totalRankWins: 0,
   totalRankLosses: 0,
   totalRankDraws: 0,
   highestRankId: 1,
-  peakExp: 0,
+  peakPoints: 0,
 });
 
 function int(value, fallback = 0) {
@@ -49,37 +58,65 @@ export function getRankById(rankId) {
   return RANKS[clamp(int(rankId, 1), 1, RANKS.length) - 1];
 }
 
-export function getRankIdFromExp(rankExp) {
-  const exp = clamp(int(rankExp), 0, MAX_RANK_EXP);
-  return Math.min(RANKS.length, Math.floor(exp / RANK_STEP_EXP) + 1);
+export function getRankIdFromPoints(rankPoints) {
+  const points = clamp(int(rankPoints), 0, MAX_RANK_POINTS);
+  let id = 1;
+  for (let i = 1; i < RANKS.length; i += 1) {
+    if (points >= RANKS[i].threshold) id = i + 1;
+    else break;
+  }
+  return id;
 }
 
 export function getRankFromProfile(profile) {
-  return getRankById(getRankIdFromExp(profile.rankExp));
+  return getRankById(getRankIdFromPoints(profile.rankPoints));
 }
 
 export function getRankProgress(profile) {
   const normalized = normalizeRankProfile(profile);
   const rank = getRankFromProfile(normalized);
   if (rank.id === RANKS.length) {
-    return { current: normalized.peakExp, max: MAX_PEAK_EXP, percent: normalized.peakExp / MAX_PEAK_EXP, isPeak: true };
+    return {
+      current: normalized.peakPoints,
+      max: null,
+      percent: Math.min(1, normalized.peakPoints / 20),
+      isPeak: true,
+    };
   }
-  const current = normalized.rankExp - rank.threshold;
-  return { current, max: RANK_STEP_EXP, percent: current / RANK_STEP_EXP, isPeak: false };
+  const current = normalized.rankPoints - rank.threshold;
+  return {
+    current,
+    max: rank.winsToNext,
+    percent: rank.winsToNext ? current / rank.winsToNext : 0,
+    isPeak: false,
+  };
+}
+
+function legacyExpToPoints(raw) {
+  const legacyExp = clamp(int(raw.rankExp), 0, 1900);
+  const oldRankId = Math.min(20, Math.floor(legacyExp / 100) + 1);
+  if (oldRankId === 20) return MAX_RANK_POINTS;
+  const fraction = (legacyExp % 100) / 100;
+  const rank = getRankById(oldRankId);
+  return rank.threshold + Math.floor(rank.winsToNext * fraction);
 }
 
 export function normalizeRankProfile(raw = {}) {
-  const rankExp = clamp(int(raw.rankExp), 0, MAX_RANK_EXP);
-  const rankId = getRankIdFromExp(rankExp);
+  const rankPoints = clamp(
+    raw.rankPoints == null ? legacyExpToPoints(raw) : int(raw.rankPoints),
+    0,
+    MAX_RANK_POINTS,
+  );
+  const rankId = getRankIdFromPoints(rankPoints);
   return {
-    rankExp,
+    rankPoints,
     winStreak: Math.max(0, int(raw.winStreak)),
     protectionMatches: clamp(int(raw.protectionMatches), 0, 2),
     totalRankWins: Math.max(0, int(raw.totalRankWins)),
     totalRankLosses: Math.max(0, int(raw.totalRankLosses)),
     totalRankDraws: Math.max(0, int(raw.totalRankDraws)),
     highestRankId: clamp(Math.max(int(raw.highestRankId, 1), rankId), 1, RANKS.length),
-    peakExp: rankId === RANKS.length ? clamp(int(raw.peakExp), 0, MAX_PEAK_EXP) : 0,
+    peakPoints: rankId === RANKS.length ? clamp(int(raw.peakPoints ?? raw.peakExp), 0, MAX_PEAK_POINTS) : 0,
   };
 }
 
@@ -92,92 +129,59 @@ export function getAiConfig(rankId) {
     level: rank.aiLevel,
     lookaheadDepth: rank.lookaheadDepth,
     errorRate: rank.errorRate,
-    captureWeight: 1 + normalized * 0.7,
-    safetyWeight: normalized,
-    positionWeight: 0.2 + normalized * 0.8,
-    informationWeight: 0.25 + normalized * 0.75,
+    captureWeight: 1 + normalized * 0.9,
+    safetyWeight: 0.12 + normalized * 1.38,
+    positionWeight: 0.2 + normalized * 1.1,
+    informationWeight: 0.18 + normalized * 1.02,
+    threatWeight: 0.1 + normalized * 1.3,
   };
 }
 
-export function chooseMatchedAiRank(playerRankId, rng = Math.random) {
-  const player = clamp(int(playerRankId, 1), 1, RANKS.length);
-  const roll = rng();
-  if (player === 1) return roll < 0.8 ? 1 : 2;
-  if (player === RANKS.length) return roll < 0.1 ? RANKS.length - 1 : RANKS.length;
-  if (roll < 0.1) return player - 1;
-  if (roll < 0.8) return player;
-  return player + 1;
+// 新规则：玩家段位和 AI 段位一一对应，不再随机匹配高/低一段。
+export function chooseMatchedAiRank(playerRankId) {
+  return clamp(int(playerRankId, 1), 1, RANKS.length);
 }
 
-export function getMatchDifficultyLabel(playerRankId, aiRankId) {
-  const diff = aiRankId - playerRankId;
-  if (diff > 0) return '越级挑战';
-  if (diff < 0) return '优势对局';
-  return '同段匹配';
-}
-
-export function getBaseExpDelta(outcome, playerRankId, aiRankId) {
-  if (outcome === 'draw') return 0;
-  const diff = clamp(aiRankId - playerRankId, -1, 1);
-  if (outcome === 'win') return diff === 1 ? 24 : diff === -1 ? 17 : 20;
-  if (outcome === 'loss') return diff === 1 ? -12 : diff === -1 ? -18 : -15;
-  throw new Error(`未知排位结果: ${outcome}`);
-}
-
-export function getWinStreakBonus(nextWinStreak) {
-  if (nextWinStreak >= 5) return 8;
-  if (nextWinStreak === 4) return 6;
-  if (nextWinStreak === 3) return 4;
-  if (nextWinStreak === 2) return 2;
-  return 0;
+export function getMatchDifficultyLabel() {
+  return '同段挑战';
 }
 
 export function settleRankedMatch(profile, outcome, aiRankId) {
   const before = normalizeRankProfile(profile);
   const oldRank = getRankFromProfile(before);
-  const normalizedAiRankId = clamp(int(aiRankId, oldRank.id), 1, RANKS.length);
-  const nextWinStreak = outcome === 'win' ? before.winStreak + 1 : 0;
-  const streakBonus = outcome === 'win' ? getWinStreakBonus(nextWinStreak) : 0;
-  const baseDelta = getBaseExpDelta(outcome, oldRank.id, normalizedAiRankId);
-  const totalDelta = baseDelta + streakBonus;
+  const normalizedAiRankId = chooseMatchedAiRank(aiRankId ?? oldRank.id);
+  const delta = outcome === 'win' ? 1 : outcome === 'loss' ? -1 : 0;
+  if (!['win', 'loss', 'draw'].includes(outcome)) throw new Error(`未知排位结果: ${outcome}`);
+
   const protectionActive = before.protectionMatches > 0;
   let protectionMatches = Math.max(0, before.protectionMatches - 1);
-  let rankExp = before.rankExp;
-  let peakExp = before.peakExp;
+  let rankPoints = before.rankPoints;
+  let peakPoints = before.peakPoints;
 
   if (oldRank.id === RANKS.length) {
-    const nextPeak = peakExp + totalDelta;
-    if (nextPeak >= 0) {
-      peakExp = clamp(nextPeak, 0, MAX_PEAK_EXP);
-    } else if (protectionActive) {
-      peakExp = 0;
-    } else {
-      rankExp = clamp(MAX_RANK_EXP + nextPeak, 0, MAX_RANK_EXP - 1);
-      peakExp = 0;
+    if (delta > 0) {
+      peakPoints = clamp(peakPoints + 1, 0, MAX_PEAK_POINTS);
+    } else if (delta < 0) {
+      if (peakPoints > 0) peakPoints -= 1;
+      else if (!protectionActive) rankPoints = MAX_RANK_POINTS - 1;
     }
-  } else {
-    let nextExp = rankExp + totalDelta;
-    const currentFloor = oldRank.threshold;
-    if (protectionActive && nextExp < currentFloor) nextExp = currentFloor;
-
-    if (nextExp >= MAX_RANK_EXP) {
-      peakExp = clamp(nextExp - MAX_RANK_EXP, 0, MAX_PEAK_EXP);
-      rankExp = MAX_RANK_EXP;
-    } else {
-      rankExp = clamp(nextExp, 0, MAX_RANK_EXP);
-      peakExp = 0;
-    }
+  } else if (delta !== 0) {
+    let nextPoints = rankPoints + delta;
+    if (protectionActive && nextPoints < oldRank.threshold) nextPoints = oldRank.threshold;
+    rankPoints = clamp(nextPoints, 0, MAX_RANK_POINTS);
   }
 
-  const newRank = getRankById(getRankIdFromExp(rankExp));
+  const newRank = getRankById(getRankIdFromPoints(rankPoints));
   const promoted = newRank.id > oldRank.id;
   const demoted = newRank.id < oldRank.id;
   if (promoted) protectionMatches = 2;
+  if (newRank.id < RANKS.length) peakPoints = 0;
 
+  const nextWinStreak = outcome === 'win' ? before.winStreak + 1 : 0;
   const next = normalizeRankProfile({
     ...before,
-    rankExp,
-    peakExp,
+    rankPoints,
+    peakPoints,
     winStreak: nextWinStreak,
     protectionMatches,
     totalRankWins: before.totalRankWins + (outcome === 'win' ? 1 : 0),
@@ -190,15 +194,18 @@ export function settleRankedMatch(profile, outcome, aiRankId) {
     profile: next,
     outcome,
     aiRankId: normalizedAiRankId,
-    baseDelta,
-    streakBonus,
-    totalDelta,
+    pointDelta: delta,
+    totalDelta: delta,
     oldRank,
     newRank,
     promoted,
     demoted,
     protectionUsed: protectionActive,
-    protectionPreventedDemotion: protectionActive && totalDelta < 0 && newRank.id === oldRank.id && (oldRank.id === RANKS.length ? before.peakExp + totalDelta < 0 : before.rankExp + totalDelta < oldRank.threshold),
+    protectionPreventedDemotion:
+      protectionActive &&
+      delta < 0 &&
+      newRank.id === oldRank.id &&
+      (oldRank.id === RANKS.length ? before.peakPoints === 0 : before.rankPoints === oldRank.threshold),
   };
 }
 

@@ -255,7 +255,7 @@ h1 span {
   height: var(--float-size, 84px);
   display: grid;
   place-items: center;
-  transform: translate(-50%, -50%) scale(.88);
+  transform: translate(-50%, -50%) scale(.82);
   opacity: 0;
   will-change: transform, opacity;
   animation: float-reveal-up 640ms cubic-bezier(.18,.72,.22,1) both;
@@ -295,19 +295,19 @@ h1 span {
 @keyframes float-reveal-up {
   0% {
     opacity: 0;
-    transform: translate(-50%, -42%) scale(.88);
+    transform: translate(-50%, -42%) scale(.82);
   }
   16% {
     opacity: .98;
-    transform: translate(-50%, calc(-50% - 8px)) scale(.98);
+    transform: translate(-50%, calc(-50% - 8px)) scale(.90);
   }
   55% {
     opacity: .82;
-    transform: translate(-50%, calc(-50% - 34px)) scale(1.09);
+    transform: translate(-50%, calc(-50% - 34px)) scale(.98);
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, calc(-50% - 66px)) scale(1.16);
+    transform: translate(-50%, calc(-50% - 62px)) scale(1.035);
   }
 }
 

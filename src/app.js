@@ -11,7 +11,7 @@ import {
 } from './game.js';
 import { chooseAiAction } from './ai.js';
 
-const UI_ASSET_BASE = 'https://raw.githubusercontent.com/BaiMaGod/haiyangqi/main/assets/ui';
+const UI_ASSET_BASE = 'assets/ui';
 
 const boardEl = document.querySelector('#board');
 const statusEl = document.querySelector('#status');

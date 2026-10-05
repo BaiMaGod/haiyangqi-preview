@@ -113,7 +113,7 @@ function countFactionByReveal(faction, revealed) {
 function getStatusText() {
   if (state.winner) {
     const humanWon = state.winner === state.humanFaction;
-    return humanWon ? '你赢了！段位经验已经结算。' : 'AI 获胜，本局段位经验已经结算。';
+    return humanWon ? '你赢了！段位胜点已经结算。' : 'AI 获胜，本局段位胜点已经结算。';
   }
   if (state.draw) return `和棋：${state.drawReason}`;
   if (!state.humanFaction) return '翻开任意暗牌，它的阵营就是你的阵营。';
@@ -183,14 +183,14 @@ function renderRankPanel() {
   const record = getRankRecord(rankProfile);
   const highest = getRankById(rankProfile.highestRankId);
   const aiRank = getRankById(matchAiRankId);
-  const matchType = getMatchDifficultyLabel(matchPlayerRankId, matchAiRankId);
+  const matchType = getMatchDifficultyLabel();
 
   rankNameEl.textContent = rank.name;
   rankMetaEl.textContent = `历史最高 ${highest.name}`;
   rankProgressEl.style.width = `${Math.round(progress.percent * 100)}%`;
   rankProgressTextEl.textContent = progress.isPeak
-    ? `巅峰经验 ${progress.current} / ${progress.max}`
-    : `${progress.current} / ${progress.max} EXP`;
+    ? `巅峰胜点 ${progress.current}`
+    : `${progress.current} / ${progress.max} 胜点`;
   rankRecordEl.textContent = `胜 ${record.wins} · 负 ${record.losses} · 和 ${record.draws} · 胜率 ${Math.round(record.winRate * 100)}%`;
   rankProtectionEl.textContent = rankProfile.protectionMatches > 0 ? `晋级保护 ${rankProfile.protectionMatches} 场` : `当前连胜 ${rankProfile.winStreak}`;
   aiRankNameEl.textContent = `${aiRank.name} AI`;
@@ -208,7 +208,8 @@ function renderRankDialog() {
       const active = rank.id === current.id ? ' active' : '';
       const reached = rank.id <= rankProfile.highestRankId ? ' reached' : '';
       const depth = rank.lookaheadDepth === 0 ? '基础判断' : `${rank.lookaheadDepth}层预判`;
-      return `<div class="rank-ladder-item${active}${reached}"><span class="rank-index">${rank.id}</span><strong>${rank.name}</strong><small>AI ${depth} · ${rank.behavior}</small></div>`;
+      const promotion = rank.winsToNext ? ` · 晋级需 ${rank.winsToNext} 胜点` : '';
+      return `<div class="rank-ladder-item${active}${reached}"><span class="rank-index">${rank.id}</span><strong>${rank.name}</strong><small>AI ${depth} · ${rank.behavior}${promotion}</small></div>`;
     })
     .join('');
 }
@@ -260,15 +261,13 @@ function renderResult() {
     resultRankChangeEl.dataset.change = 'same';
   }
 
-  resultExpDeltaEl.textContent = `${signed(settlement.totalDelta)} EXP`;
+  resultExpDeltaEl.textContent = `${signed(settlement.totalDelta)} 胜点`;
   resultExpDeltaEl.dataset.delta = settlement.totalDelta > 0 ? 'up' : settlement.totalDelta < 0 ? 'down' : 'same';
-  const parts = [`基础 ${signed(settlement.baseDelta)}`];
-  if (settlement.streakBonus > 0) parts.push(`连胜奖励 +${settlement.streakBonus}`);
-  resultExpBreakdownEl.textContent = parts.join(' · ');
+  resultExpBreakdownEl.textContent = settlement.outcome === 'win' ? '本局胜利 +1' : settlement.outcome === 'loss' ? '本局失败 -1' : '和棋不变';
   resultRankProgressEl.style.width = `${Math.round(progress.percent * 100)}%`;
   resultRankProgressTextEl.textContent = progress.isPeak
-    ? `${settlement.newRank.name} · 巅峰 ${progress.current} / ${progress.max}`
-    : `${settlement.newRank.name} · ${progress.current} / ${progress.max}`;
+    ? `${settlement.newRank.name} · 巅峰胜点 ${progress.current}`
+    : `${settlement.newRank.name} · ${progress.current} / ${progress.max} 胜点`;
 
   if (settlement.protectionPreventedDemotion) {
     resultProtectionEl.textContent = '晋级保护生效：本局未掉段';
@@ -415,7 +414,7 @@ function handleManualRestart() {
     if (!confirmed) return;
     const settlement = settleMatch('loss');
     startNewMatch();
-    toast(`已按失败结算 ${signed(settlement.totalDelta)} EXP`);
+    toast(`已按失败结算 ${signed(settlement.totalDelta)} 胜点`);
     return;
   }
   startNewMatch();

@@ -10,7 +10,6 @@ import {
   isAdjacent,
 } from './game.js';
 import { chooseAiAction } from './ai.js';
-import { REVEAL_ASSETS } from './reveal-assets.js';
 import {
   RANKS,
   chooseMatchedAiRank,
@@ -186,7 +185,7 @@ function renderBoard() {
 function preloadRevealAssets() {
   SPECIES.forEach((species) => {
     const image = new Image();
-    image.src = REVEAL_ASSETS[species.type] || species.art;
+    image.src = species.art;
   });
 }
 
@@ -346,14 +345,14 @@ function showRevealFx(index, piece) {
 
   const species = getSpecies(piece);
   const rect = tile.getBoundingClientRect();
-  const size = Math.min(132, Math.max(54, rect.width * 1.42));
+  const size = Math.min(108, Math.max(46, rect.width * 1.08));
 
   const fx = document.createElement('div');
   fx.className = `float-reveal float-reveal-${piece.faction}`;
   fx.style.left = `${rect.left + rect.width / 2}px`;
   fx.style.top = `${rect.top + rect.height / 2}px`;
   fx.style.setProperty('--float-size', `${size}px`);
-  fx.innerHTML = `<img class="float-reveal-art" src="${REVEAL_ASSETS[species.type] || species.art}" alt="" draggable="false" decoding="async" />`;
+  fx.innerHTML = `<img class="float-reveal-art" src="${species.art}" alt="" draggable="false" decoding="async" />`;
   floatRevealLayer.appendChild(fx);
 
   tile.classList.remove('just-revealed');

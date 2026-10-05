@@ -126,6 +126,10 @@ function signed(value) {
   return value > 0 ? `+${value}` : `${value}`;
 }
 
+function formatPoints(value) {
+  return Number(value).toLocaleString('zh-CN');
+}
+
 function factionName(faction) {
   return faction ? FACTIONS[faction].name : '等待首翻';
 }
@@ -227,7 +231,7 @@ function renderRankPanel() {
   rankProgressEl.style.width = `${Math.round(progress.percent * 100)}%`;
   rankProgressTextEl.textContent = progress.isPeak
     ? `巅峰胜点 ${progress.current}`
-    : `${progress.current} / ${progress.max} 胜点`;
+    : `${formatPoints(progress.current)} / ${formatPoints(progress.max)} 胜点`;
   rankRecordEl.textContent = `胜 ${record.wins} · 负 ${record.losses} · 和 ${record.draws} · 胜率 ${Math.round(record.winRate * 100)}%`;
   rankProtectionEl.textContent = rankProfile.protectionMatches > 0 ? `晋级保护 ${rankProfile.protectionMatches} 场` : `当前连胜 ${rankProfile.winStreak}`;
   aiRankNameEl.textContent = `${aiRank.name} AI`;
@@ -245,7 +249,7 @@ function renderRankDialog() {
       const active = rank.id === current.id ? ' active' : '';
       const reached = rank.id <= rankProfile.highestRankId ? ' reached' : '';
       const depth = rank.lookaheadDepth === 0 ? '基础判断' : `${rank.lookaheadDepth}层预判`;
-      const promotion = rank.winsToNext ? ` · 晋级需 ${rank.winsToNext} 胜点` : '';
+      const promotion = rank.winsToNext ? ` · 晋级需 ${formatPoints(rank.winsToNext)} 胜点` : '';
       return `<div class="rank-ladder-item${active}${reached}"><span class="rank-index">${rank.id}</span><strong>${rank.name}</strong><small>AI ${depth} · ${rank.behavior}${promotion}</small></div>`;
     })
     .join('');
@@ -304,7 +308,7 @@ function renderResult() {
   resultRankProgressEl.style.width = `${Math.round(progress.percent * 100)}%`;
   resultRankProgressTextEl.textContent = progress.isPeak
     ? `${settlement.newRank.name} · 巅峰胜点 ${progress.current}`
-    : `${settlement.newRank.name} · ${progress.current} / ${progress.max} 胜点`;
+    : `${settlement.newRank.name} · ${formatPoints(progress.current)} / ${formatPoints(progress.max)} 胜点`;
 
   if (settlement.protectionPreventedDemotion) {
     resultProtectionEl.textContent = '晋级保护生效：本局未掉段';

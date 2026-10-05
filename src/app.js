@@ -10,6 +10,7 @@ import {
   isAdjacent,
 } from './game.js';
 import { chooseAiAction } from './ai.js';
+import { REVEAL_ASSETS } from './reveal-assets.js';
 import {
   RANKS,
   chooseMatchedAiRank,
@@ -185,7 +186,7 @@ function renderBoard() {
 function preloadRevealAssets() {
   SPECIES.forEach((species) => {
     const image = new Image();
-    image.src = species.art;
+    image.src = REVEAL_ASSETS[species.type] || species.art;
   });
 }
 
@@ -352,7 +353,7 @@ function showRevealFx(index, piece) {
   fx.style.left = `${rect.left + rect.width / 2}px`;
   fx.style.top = `${rect.top + rect.height / 2}px`;
   fx.style.setProperty('--float-size', `${size}px`);
-  fx.innerHTML = `<img class="float-reveal-art" src="${species.art}" alt="" draggable="false" decoding="async" />`;
+  fx.innerHTML = `<img class="float-reveal-art" src="${REVEAL_ASSETS[species.type] || species.art}" alt="" draggable="false" decoding="async" />`;
   floatRevealLayer.appendChild(fx);
 
   tile.classList.remove('just-revealed');

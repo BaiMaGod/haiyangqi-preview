@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#061d31" />
+    <title>海洋棋：海底食物链</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ocean-bg" aria-hidden="true">
+      <span class="bubble b1"></span><span class="bubble b2"></span><span class="bubble b3"></span>
+      <span class="bubble b4"></span><span class="bubble b5"></span>
+    </div>
+
+    <main class="game-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">6 × 10 · 翻牌策略棋</p>
+          <h1>海洋棋 <span>海底食物链</span></h1>
+        </div>
+        <div class="top-actions">
+          <button id="rules-button" class="secondary-btn">规则</button>
+          <button class="primary-btn" data-restart>重新开局</button>
+        </div>
+      </header>
+
+      <section class="hud" aria-label="对局信息">
+        <article class="team-card player-card">
+          <div class="avatar">你</div>
+          <div>
+            <small>玩家阵营</small>
+            <strong id="player-faction">等待首翻</strong>
+          </div>
+          <div class="remaining"><b id="player-remaining">30</b><span>剩余</span></div>
+        </article>
+
+        <article class="turn-card">
+          <span id="turn-badge" data-turn="human">你的回合</span>
+          <p id="status">翻开任意暗牌，它的阵营就是你的阵营。</p>
+          <div class="mini-stats"><span>行动 <b id="move-count">0</b></span><span>选择 <b id="selected-info">未选择</b></span></div>
+        </article>
+
+        <article class="team-card ai-card">
+          <div class="avatar">AI</div>
+          <div>
+            <small>电脑对手</small>
+            <strong>另一阵营</strong>
+          </div>
+          <div class="remaining"><b id="ai-remaining">30</b><span>剩余</span></div>
+        </article>
+      </section>
+
+      <section class="board-wrap">
+        <div id="board" class="board" role="grid" aria-label="海洋棋棋盘"></div>
+      </section>
+
+      <section class="rule-strip">
+        <div><b>大吃小</b><span>高等级可吃低等级，同级可互吃</span></div>
+        <div class="cycle"><b>唯一闭环</b><span>🪸 藤壶 1 → 🐋 虎鲸 8</span></div>
+        <div><b>每回合一次行动</b><span>翻牌 / 移动 / 吃子三选一</span></div>
+      </section>
+
+      <section id="legend" class="legend" aria-label="等级图鉴"></section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div id="result-overlay" class="result-overlay" aria-live="assertive">
+      <div class="result-card">
+        <span class="result-icon">🌊</span>
+        <h2 id="result-title">你赢了！</h2>
+        <p id="result-desc"></p>
+        <button class="primary-btn" data-restart>再来一局</button>
+      </div>
+    </div>
+
+    <dialog id="rules-dialog" class="rules-dialog">
+      <div class="dialog-head"><h2>游戏规则</h2><button id="close-rules" aria-label="关闭">×</button></div>
+      <ol>
+        <li><b>首翻定阵营：</b>你第一次翻出的棋子属于哪一方，你就控制哪一方。</li>
+        <li><b>每回合只做一件事：</b>翻一张暗牌，或让己方棋子上下左右移动一格，或吃掉相邻敌子。</li>
+        <li><b>大吃小：</b>8级虎鲸一路压到1级藤壶；同等级可以互吃。</li>
+        <li><b>唯一例外：</b>1级藤壶可以吃8级虎鲸，而虎鲸不能吃藤壶。</li>
+        <li><b>获胜：</b>消灭对方全部棋子。</li>
+      </ol>
+      <p class="dialog-note">当前为 MVP 规则版：不含技能、地形、装备与成长系统。</p>
+    </dialog>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

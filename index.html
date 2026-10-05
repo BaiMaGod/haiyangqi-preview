@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#061d31" />
     <title>海洋棋：海底食物链</title>
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./rank.css" />
   </head>
   <body>
     <div class="ocean-bg" aria-hidden="true">
@@ -20,10 +21,26 @@
           <h1>海洋棋 <span>海底食物链</span></h1>
         </div>
         <div class="top-actions">
+          <button id="rank-button" class="secondary-btn">段位</button>
           <button id="rules-button" class="secondary-btn">规则</button>
-          <button class="primary-btn" data-restart>重新开局</button>
+          <button id="restart-button" class="primary-btn">重新开局</button>
         </div>
       </header>
+
+      <section class="rank-panel" aria-label="段位信息">
+        <div class="rank-emblem" aria-hidden="true">棋</div>
+        <div class="rank-main">
+          <div class="rank-heading"><strong id="rank-name">棋士</strong><span id="rank-meta">历史最高 棋士</span></div>
+          <div class="rank-progress-track"><span id="rank-progress"></span></div>
+          <div class="rank-sub"><span id="rank-progress-text">0 / 100 EXP</span><span id="rank-protection">当前连胜 0</span></div>
+          <small id="rank-record">胜 0 · 负 0 · 和 0 · 胜率 0%</small>
+        </div>
+        <div class="ai-match-card">
+          <small>本局电脑对手</small>
+          <strong id="ai-rank-name">棋士 AI</strong>
+          <span id="ai-match-type">同段匹配</span>
+        </div>
+      </section>
 
       <section class="hud" aria-label="对局信息">
         <article class="team-card player-card">
@@ -44,7 +61,7 @@
         <article class="team-card ai-card">
           <div class="avatar">AI</div>
           <div>
-            <small>电脑对手</small>
+            <small>电脑阵营</small>
             <strong>另一阵营</strong>
           </div>
           <div class="remaining"><b id="ai-remaining">30</b><span id="ai-remaining-detail">总剩余（含暗牌）</span></div>
@@ -58,7 +75,7 @@
       <section class="rule-strip">
         <div><b>大吃小</b><span>高等级可吃低等级，同级可互吃</span></div>
         <div class="cycle"><b>唯一闭环</b><span>🪸 藤壶 1 → 🐋 虎鲸 8</span></div>
-        <div><b>每回合一次行动</b><span>翻牌 / 移动 / 吃子三选一</span></div>
+        <div><b>排位成长</b><span>赢棋加经验 · 输棋减经验 · 高段 AI 更强</span></div>
       </section>
 
       <section id="legend" class="legend" aria-label="等级图鉴"></section>
@@ -67,11 +84,18 @@
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <div id="result-overlay" class="result-overlay" aria-live="assertive">
-      <div class="result-card">
+      <div class="result-card ranked-result-card">
         <span class="result-icon">🌊</span>
         <h2 id="result-title">你赢了！</h2>
         <p id="result-desc"></p>
-        <button class="primary-btn" data-restart>再来一局</button>
+        <div class="result-rank-box">
+          <strong id="result-rank-change" data-change="same">棋士</strong>
+          <div class="result-exp-line"><span id="result-exp-breakdown">基础 +20</span><b id="result-exp-delta" data-delta="up">+20 EXP</b></div>
+          <div class="rank-progress-track result-progress"><span id="result-rank-progress"></span></div>
+          <small id="result-rank-progress-text">棋士 · 20 / 100</small>
+          <small id="result-protection"></small>
+        </div>
+        <button id="result-restart" class="primary-btn">再来一局</button>
       </div>
     </div>
 
@@ -82,9 +106,18 @@
         <li><b>每回合只做一件事：</b>翻一张暗牌，或让己方棋子上下左右移动一格，或吃掉相邻敌子。</li>
         <li><b>大吃小：</b>8级虎鲸一路压到1级藤壶；同等级可以互吃。</li>
         <li><b>唯一例外：</b>1级藤壶可以吃8级虎鲸，而虎鲸不能吃藤壶。</li>
+        <li><b>排位：</b>赢棋增加经验、输棋减少经验；段位越高，匹配的 AI 越强。</li>
+        <li><b>晋级保护：</b>晋级后的两场对局不会掉回上一段。</li>
+        <li><b>重开：</b>确定阵营后中途重新开局，会按本局失败结算段位经验。</li>
         <li><b>获胜：</b>消灭对方全部棋子。</li>
       </ol>
-      <p class="dialog-note">当前为 MVP 规则版：不含技能、地形、装备与成长系统。</p>
+      <p class="dialog-note">AI 只使用公开信息进行判断，不会读取尚未翻开的暗牌身份。</p>
+    </dialog>
+
+    <dialog id="rank-dialog" class="rules-dialog rank-dialog">
+      <div class="dialog-head"><div><h2>段位之路</h2><p id="rank-dialog-summary" class="dialog-summary">当前 棋士</p></div><button id="close-rank" aria-label="关闭">×</button></div>
+      <div id="rank-ladder" class="rank-ladder"></div>
+      <p class="dialog-note">共 20 个段位。每个普通段位需要 100 EXP 晋级；大棋神使用巅峰经验。段位越高，AI 的风险判断和预判能力越强。</p>
     </dialog>
 
     <script type="module" src="./src/app.js"></script>

@@ -17,6 +17,8 @@ const turnBadgeEl = document.querySelector('#turn-badge');
 const playerFactionEl = document.querySelector('#player-faction');
 const playerRemainingEl = document.querySelector('#player-remaining');
 const aiRemainingEl = document.querySelector('#ai-remaining');
+const playerRemainingDetailEl = document.querySelector('#player-remaining-detail');
+const aiRemainingDetailEl = document.querySelector('#ai-remaining-detail');
 const moveCountEl = document.querySelector('#move-count');
 const selectedInfoEl = document.querySelector('#selected-info');
 const toastEl = document.querySelector('#toast');
@@ -42,6 +44,11 @@ function countFaction(faction) {
   return state.board.filter((piece) => piece?.faction === faction).length;
 }
 
+function countFactionByReveal(faction, revealed) {
+  if (!faction) return revealed ? 0 : 30;
+  return state.board.filter((piece) => piece?.faction === faction && piece.revealed === revealed).length;
+}
+
 function getStatusText() {
   if (state.winner) {
     const humanWon = state.winner === state.humanFaction;
@@ -50,6 +57,11 @@ function getStatusText() {
   if (state.draw) return `和棋：${state.drawReason}`;
   if (!state.humanFaction) return '翻开任意暗牌，它的阵营就是你的阵营。';
   if (state.turn === 'ai') return 'AI 正在思考……';
+  const revealedOwn = countFactionByReveal(state.humanFaction, true);
+  const hiddenOwn = countFactionByReveal(state.humanFaction, false);
+  if (revealedOwn === 0 && hiddenOwn > 0) {
+    return `你的明牌已经被吃完，但还有 ${hiddenOwn} 枚己方棋子藏在暗牌里，继续翻牌。`;
+  }
   if (selected !== null) return '已选择棋子：点击相邻空格移动，或点击可吃的敌方棋子。';
   return '轮到你：翻牌，或移动 / 吃子。';
 }
@@ -125,8 +137,16 @@ function render() {
   turnBadgeEl.dataset.turn = state.turn;
   playerFactionEl.textContent = factionName(state.humanFaction);
   playerFactionEl.dataset.faction = state.humanFaction || '';
-  playerRemainingEl.textContent = countFaction(state.humanFaction);
-  aiRemainingEl.textContent = countFaction(state.aiFaction);
+  const playerTotal = countFaction(state.humanFaction);
+  const aiTotal = countFaction(state.aiFaction);
+  playerRemainingEl.textContent = playerTotal;
+  aiRemainingEl.textContent = aiTotal;
+  playerRemainingDetailEl.textContent = state.humanFaction
+    ? `总剩余 · 暗${countFactionByReveal(state.humanFaction, false)}`
+    : '总剩余（含暗牌）';
+  aiRemainingDetailEl.textContent = state.aiFaction
+    ? `总剩余 · 暗${countFactionByReveal(state.aiFaction, false)}`
+    : '总剩余（含暗牌）';
   moveCountEl.textContent = state.moveCount;
 
   if (selected !== null && state.board[selected]) {

@@ -32,7 +32,7 @@
         <div class="rank-main">
           <div class="rank-heading"><strong id="rank-name">棋士</strong><span id="rank-meta">历史最高 棋士</span></div>
           <div class="rank-progress-track"><span id="rank-progress"></span></div>
-          <div class="rank-sub"><span id="rank-progress-text">0 / 100 EXP</span><span id="rank-protection">当前连胜 0</span></div>
+          <div class="rank-sub"><span id="rank-progress-text">0 / 1 胜点</span><span id="rank-protection">当前连胜 0</span></div>
           <small id="rank-record">胜 0 · 负 0 · 和 0 · 胜率 0%</small>
         </div>
         <div class="ai-match-card">
@@ -75,7 +75,7 @@
       <section class="rule-strip">
         <div><b>大吃小</b><span>高等级可吃低等级，同级可互吃</span></div>
         <div class="cycle"><b>唯一闭环</b><span>🪸 藤壶 1 → 🐋 虎鲸 8</span></div>
-        <div><b>排位成长</b><span>赢棋加经验 · 输棋减经验 · 高段 AI 更强</span></div>
+        <div><b>排位成长</b><span>赢棋 +1 胜点 · 输棋 -1 胜点 · 每段 AI 固定变强</span></div>
       </section>
 
       <section id="legend" class="legend" aria-label="等级图鉴"></section>
@@ -90,9 +90,9 @@
         <p id="result-desc"></p>
         <div class="result-rank-box">
           <strong id="result-rank-change" data-change="same">棋士</strong>
-          <div class="result-exp-line"><span id="result-exp-breakdown">基础 +20</span><b id="result-exp-delta" data-delta="up">+20 EXP</b></div>
+          <div class="result-exp-line"><span id="result-exp-breakdown">本局胜利 +1</span><b id="result-exp-delta" data-delta="up">+1 胜点</b></div>
           <div class="rank-progress-track result-progress"><span id="result-rank-progress"></span></div>
-          <small id="result-rank-progress-text">棋士 · 20 / 100</small>
+          <small id="result-rank-progress-text">棋士 · 0 / 1 胜点</small>
           <small id="result-protection"></small>
         </div>
         <button id="result-restart" class="primary-btn">再来一局</button>
@@ -106,7 +106,7 @@
         <li><b>每回合只做一件事：</b>翻一张暗牌，或让己方棋子上下左右移动一格，或吃掉相邻敌子。</li>
         <li><b>大吃小：</b>8级虎鲸一路压到1级藤壶；同等级可以互吃。</li>
         <li><b>唯一例外：</b>1级藤壶可以吃8级虎鲸，而虎鲸不能吃藤壶。</li>
-        <li><b>排位：</b>赢棋增加经验、输棋减少经验；段位越高，匹配的 AI 越强。</li>
+        <li><b>排位：</b>赢棋 +1 胜点、输棋 -1 胜点；每个玩家段位固定对应同段 AI，且 AI 强度逐级提升。</li>
         <li><b>晋级保护：</b>晋级后的两场对局不会掉回上一段。</li>
         <li><b>重开：</b>确定阵营后中途重新开局，会按本局失败结算段位经验。</li>
         <li><b>获胜：</b>消灭对方全部棋子。</li>
@@ -117,7 +117,7 @@
     <dialog id="rank-dialog" class="rules-dialog rank-dialog">
       <div class="dialog-head"><div><h2>段位之路</h2><p id="rank-dialog-summary" class="dialog-summary">当前 棋士</p></div><button id="close-rank" aria-label="关闭">×</button></div>
       <div id="rank-ladder" class="rank-ladder"></div>
-      <p class="dialog-note">共 20 个段位。每个普通段位需要 100 EXP 晋级；大棋神使用巅峰经验。段位越高，AI 的风险判断和预判能力越强。</p>
+      <p class="dialog-note">共 20 个段位。晋级门槛从 1、2、4、8 胜点开始逐级提高；玩家始终挑战同段 AI。段位越高，AI 的错误率更低、风险判断更强、预判更深。</p>
     </dialog>
 
     <script type="module" src="./src/app.js"></script>

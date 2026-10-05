@@ -108,7 +108,7 @@
         <li><b>唯一例外：</b>1级藤壶可以吃8级虎鲸，而虎鲸不能吃藤壶。</li>
         <li><b>排位：</b>赢棋 +1 胜点、输棋 -1 胜点；每个玩家段位固定对应同段 AI，且 AI 强度逐级提升。</li>
         <li><b>晋级保护：</b>晋级后的两场对局不会掉回上一段。</li>
-        <li><b>重开：</b>确定阵营后中途重新开局，会按本局失败结算段位经验。</li>
+        <li><b>重开：</b>确定阵营后中途重新开局，会按本局失败结算 -1 胜点。</li>
         <li><b>获胜：</b>消灭对方全部棋子。</li>
       </ol>
       <p class="dialog-note">AI 只使用公开信息进行判断，不会读取尚未翻开的暗牌身份。</p>
@@ -117,7 +117,7 @@
     <dialog id="rank-dialog" class="rules-dialog rank-dialog">
       <div class="dialog-head"><div><h2>段位之路</h2><p id="rank-dialog-summary" class="dialog-summary">当前 棋士</p></div><button id="close-rank" aria-label="关闭">×</button></div>
       <div id="rank-ladder" class="rank-ladder"></div>
-      <p class="dialog-note">共 20 个段位。晋级门槛从 1、2、4、8 胜点开始逐级提高；玩家始终挑战同段 AI。段位越高，AI 的错误率更低、风险判断更强、预判更深。</p>
+      <p class="dialog-note">共 20 个段位。晋级门槛严格按 1、2、4、8、16、32……逐级翻倍；玩家始终挑战同段 AI。段位越高，AI 的错误率更低、风险判断更强、预判更深。</p>
     </dialog>
 
     <script type="module" src="./src/app.js"></script>

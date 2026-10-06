@@ -47,6 +47,73 @@ function visibleEnemies(state, faction) {
   return visiblePieces(state).filter(({ piece }) => piece.faction !== faction);
 }
 
+function countHiddenPieces(state) {
+  return state.board.reduce((count, piece) => count + (piece && !piece.revealed ? 1 : 0), 0);
+}
+
+function hiddenRatio(state) {
+  const occupied = state.board.reduce((count, piece) => count + (piece ? 1 : 0), 0);
+  return occupied ? countHiddenPieces(state) / occupied : 0;
+}
+
+function recentActorActions(state, actor, limit = 8) {
+  return (state.recentActions || []).filter((action) => action.actor === actor).slice(-limit);
+}
+
+function consecutiveQuietAiMoves(state) {
+  const actions = recentActorActions(state, 'ai', 6);
+  let count = 0;
+  for (let i = actions.length - 1; i >= 0; i -= 1) {
+    if (actions[i].type !== 'move' || actions[i].captured) break;
+    count += 1;
+  }
+  return count;
+}
+
+function repetitionPenalty(state, action, config) {
+  if (action.type !== 'move') return 0;
+  const piece = state.board[action.from];
+  if (!piece) return 0;
+
+  const recent = recentActorActions(state, 'ai', 6);
+  let penalty = 0;
+  let samePieceMoves = 0;
+
+  for (let i = recent.length - 1, age = 0; i >= 0 && age < 4; i -= 1, age += 1) {
+    const previous = recent[i];
+    if (previous.type !== 'move' || previous.pieceId !== piece.id) continue;
+    samePieceMoves += 1;
+
+    // “A→B，下一次又B→A”是最明显的无意义往返，直接重罚。
+    if (previous.from === action.to && previous.to === action.from) {
+      penalty += 62 * (0.75 + config.opponentModelWeight * 0.75);
+    } else {
+      penalty += (14 - age * 2) * config.positionWeight;
+    }
+  }
+
+  if (samePieceMoves >= 2) penalty += 28 * config.threatWeight;
+  if (consecutiveQuietAiMoves(state) >= 2) penalty += 18 * config.informationWeight;
+
+  return penalty;
+}
+
+function explorationBoost(state, config) {
+  const ratio = hiddenRatio(state);
+  if (ratio <= 0) return 0;
+
+  const stagnation = Math.min(8, state.noCaptureTurns || 0);
+  const quietMoves = Math.min(3, consecutiveQuietAiMoves(state));
+
+  return (
+    10 +
+    ratio * 34 +
+    stagnation * 1.25 +
+    quietMoves * 9 +
+    config.informationWeight * 7
+  );
+}
+
 function hasVisibleRank(state, faction, rank) {
   return visiblePieces(state, faction).some(({ piece }) => piece.rank === rank);
 }
@@ -161,7 +228,8 @@ function scoreReveal(state, action, config, actor = 'ai') {
   const distance = Math.abs(row - centerRow) + Math.abs(col - centerCol);
 
   // 不读取 action.index 上暗牌的任何身份信息。
-  let score = 12 - distance * 0.45;
+  // 暗牌越多、局面越久没有进展，探索价值越高，避免 AI 用安全移动拖延翻牌。
+  let score = 12 - distance * 0.45 + explorationBoost(state, config);
 
   let revealedNeighbors = 0;
   let friendlyNeighbors = 0;
@@ -232,6 +300,7 @@ function scoreMove(state, action, config) {
     }
   }
 
+  score -= repetitionPenalty(state, action, config);
   return score;
 }
 
@@ -401,6 +470,30 @@ export function chooseAiAction(state, options = {}) {
     action,
     score: scoreRootAction(state, action, config),
   }));
+
+  const revealOptions = scored
+    .filter((item) => item.action.type === 'reveal')
+    .sort((a, b) => b.score - a.score);
+  const hasCapture = actions.some((action) => action.type === 'capture');
+  const quietMoves = consecutiveQuietAiMoves(state);
+  const ratio = hiddenRatio(state);
+
+  // 防止公开局面搜索陷入“安全来回移动”的局部最优。
+  // 在仍有大量暗牌、又没有立即吃子机会时，连续两次纯移动后必须打破循环去探索。
+  if (revealOptions.length && !hasCapture && ratio >= 0.25 && quietMoves >= 2) {
+    return revealOptions[0].action;
+  }
+
+  // 高段 AI 在明显停滞的局面会更早主动获取新信息，而不是无限走位。
+  if (
+    revealOptions.length &&
+    !hasCapture &&
+    config.level >= 10 &&
+    ratio >= 0.35 &&
+    (state.noCaptureTurns || 0) >= 5
+  ) {
+    return revealOptions[0].action;
+  }
 
   return chooseScored(scored, config, rng);
 }

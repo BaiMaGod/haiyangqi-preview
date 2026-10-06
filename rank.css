@@ -148,3 +148,95 @@
   .ai-match-card strong { font-size: 12px; }
   .board-wrap { width: min(100%, calc((100svh - 198px) * 10 / 6)); }
 }
+
+
+/* Debug 启动模式：仅 ?debug=1 时由 JS 显示 */
+.debug-panel[hidden] { display: none; }
+.debug-panel {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 300px) auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 102, 102, .38);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(87, 22, 36, .86), rgba(36, 17, 40, .9));
+  box-shadow: inset 0 0 30px rgba(255, 92, 92, .035), 0 8px 24px rgba(0, 0, 0, .14);
+}
+.debug-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: #fff;
+  background: #c63b50;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  box-shadow: 0 0 14px rgba(198, 59, 80, .22);
+}
+.debug-rank-field {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+}
+.debug-rank-field > span {
+  color: #ffc6ce;
+  font-size: 10px;
+  white-space: nowrap;
+}
+#debug-rank-select {
+  width: 100%;
+  min-height: 34px;
+  padding: 5px 28px 5px 9px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 8px;
+  color: #f7fbff;
+  background: #122d42;
+  font: inherit;
+  font-size: 11px;
+}
+.debug-apply-btn {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 197, 207, .32);
+  border-radius: 8px;
+  color: #fff4f6;
+  background: rgba(198, 59, 80, .72);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.debug-apply-btn:hover { background: rgba(214, 66, 91, .88); }
+#debug-status {
+  min-width: 0;
+  color: #e8b9c1;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+@media (max-width: 760px) {
+  .debug-panel {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  #debug-status {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .debug-panel {
+    grid-template-columns: 1fr;
+    padding: 9px;
+  }
+  .debug-badge { justify-self: start; }
+  .debug-rank-field { grid-template-columns: 62px minmax(0, 1fr); }
+  .debug-apply-btn { width: 100%; }
+  #debug-status { grid-column: auto; text-align: left; }
+}

@@ -65,6 +65,7 @@ export function createInitialState(rng = Math.random) {
     moveCount: 0,
     noCaptureTurns: 0,
     lastAction: null,
+    recentActions: [],
   };
 }
 
@@ -147,6 +148,7 @@ function cloneState(state) {
   return {
     ...state,
     board: state.board.map((piece) => (piece ? { ...piece } : null)),
+    recentActions: [...(state.recentActions || [])],
   };
 }
 
@@ -154,7 +156,12 @@ function finishAction(next, actor, action, captured = false) {
   next.selected = null;
   next.moveCount += 1;
   next.noCaptureTurns = captured ? 0 : next.noCaptureTurns + 1;
-  next.lastAction = { actor, ...action, captured };
+  let pieceId = null;
+  if (action.type === 'move' || action.type === 'capture') pieceId = next.board[action.to]?.id || null;
+  if (action.type === 'reveal') pieceId = next.board[action.index]?.id || null;
+
+  next.lastAction = { actor, ...action, captured, pieceId };
+  next.recentActions = [...(next.recentActions || []), next.lastAction].slice(-16);
 
   for (const faction of Object.keys(FACTIONS)) {
     if (countFaction(next, faction) === 0) {

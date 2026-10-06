@@ -28,6 +28,16 @@
         </div>
       </header>
 
+      <section id="debug-panel" class="debug-panel" aria-label="Debug 段位调试" hidden>
+        <span class="debug-badge">DEBUG</span>
+        <label class="debug-rank-field">
+          <span>测试段位</span>
+          <select id="debug-rank-select" aria-label="选择测试段位"></select>
+        </label>
+        <button id="debug-apply-rank" class="debug-apply-btn" type="button">应用并重开</button>
+        <small id="debug-status">Debug 模式不会修改正常段位存档</small>
+      </section>
+
       <section class="rank-panel" aria-label="段位信息">
         <div class="rank-emblem" aria-hidden="true">棋</div>
         <div class="rank-main">

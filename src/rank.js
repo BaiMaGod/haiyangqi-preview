@@ -76,6 +76,21 @@ export function getRankFromProfile(profile) {
   return getRankById(getRankIdFromPoints(profile.rankPoints));
 }
 
+export function createDebugRankProfile(rankId) {
+  const rank = getRankById(rankId);
+  return normalizeRankProfile({
+    rankSchemaVersion: 2,
+    rankPoints: rank.threshold,
+    highestRankId: rank.id,
+    winStreak: 0,
+    protectionMatches: 0,
+    totalRankWins: 0,
+    totalRankLosses: 0,
+    totalRankDraws: 0,
+    peakPoints: 0,
+  });
+}
+
 export function getRankProgress(profile) {
   const normalized = normalizeRankProfile(profile);
   const rank = getRankFromProfile(normalized);

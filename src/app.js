@@ -10,6 +10,7 @@ import {
   isAdjacent,
 } from './game.js';
 import { chooseAiAction } from './ai.js';
+import { clearCaptureFx, playCaptureFx } from './captureFx.js?v=capture-predation-20261005-1';
 import {
   RANKS,
   chooseMatchedAiRank,
@@ -81,6 +82,7 @@ let matchPlayerRankId = getRankFromProfile(rankProfile).id;
 let matchAiRankId = chooseMatchedAiRank(matchPlayerRankId);
 let matchSettled = false;
 let rankSettlement = null;
+let interactionLocked = false;
 
 function loadRankProfile() {
   try {
@@ -363,9 +365,30 @@ function showRevealFx(index, piece) {
   window.setTimeout(() => fx.remove(), FLOAT_REVEAL_DURATION + 120);
   window.setTimeout(() => tile.classList.remove('just-revealed'), 300);
 }
-function commitHumanAction(action) {
+async function playCaptureBeforeAction(action) {
+  if (action.type !== 'capture') return;
+
+  const attacker = state.board[action.from];
+  const defender = state.board[action.to];
+  if (!attacker || !defender || !canCapture(attacker, defender)) return;
+
+  await playCaptureFx({
+    boardEl,
+    fromIndex: action.from,
+    toIndex: action.to,
+    attacker,
+    defender,
+    attackerSpecies: getSpecies(attacker),
+    defenderSpecies: getSpecies(defender),
+  });
+}
+
+async function commitHumanAction(action) {
+  if (interactionLocked) return;
   const revealPiece = action.type === 'reveal' ? state.board[action.index] : null;
+  interactionLocked = true;
   try {
+    await playCaptureBeforeAction(action);
     state = applyAction(state, 'human', action);
     selected = null;
     render();
@@ -377,10 +400,12 @@ function commitHumanAction(action) {
     }
   } catch (error) {
     toast(error.message);
+  } finally {
+    interactionLocked = false;
   }
 }
 function handleTileClick(index) {
-  if (state.turn !== 'human' || state.winner || state.draw) return;
+  if (interactionLocked || state.turn !== 'human' || state.winner || state.draw) return;
   const piece = state.board[index];
 
   if (piece && !piece.revealed) {
@@ -434,23 +459,29 @@ function scheduleAi(delay = DEFAULT_AI_DELAY) {
   clearTimeout(aiTimer);
   if (state.turn !== 'ai' || state.winner || state.draw) return;
 
-  aiTimer = setTimeout(() => {
+  aiTimer = setTimeout(async () => {
     const action = chooseAiAction(state, { rankId: matchAiRankId });
     if (!action) return;
     const revealPiece = action.type === 'reveal' ? state.board[action.index] : null;
+    interactionLocked = true;
     try {
+      await playCaptureBeforeAction(action);
       state = applyAction(state, 'ai', action);
       render();
       if (revealPiece) showRevealFx(action.index, revealPiece);
     } catch (error) {
       console.error(error);
       toast('AI 行动异常，请重新开始');
+    } finally {
+      interactionLocked = false;
     }
   }, delay);
 }
 
 function startNewMatch() {
   clearTimeout(aiTimer);
+  clearCaptureFx(boardEl);
+  interactionLocked = false;
   floatRevealLayer.replaceChildren();
   state = createInitialState();
   selected = null;
@@ -463,6 +494,10 @@ function startNewMatch() {
 }
 
 function handleManualRestart() {
+  if (interactionLocked) {
+    toast('捕食演出进行中，请稍后重开');
+    return;
+  }
   if (!state.winner && !state.draw && state.humanFaction && !matchSettled) {
     const confirmed = window.confirm('当前排位尚未结束，重新开局将按失败结算。确定重新开局吗？');
     if (!confirmed) return;

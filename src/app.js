@@ -13,6 +13,7 @@ import { chooseAiAction } from './ai.js';
 import { clearCaptureFx, playCaptureFx } from './captureFx.js?v=capture-predation-20261005-1';
 import {
   RANKS,
+  createDebugRankProfile,
   chooseMatchedAiRank,
   getMatchDifficultyLabel,
   getRankById,
@@ -28,6 +29,10 @@ const RANK_STORAGE_KEY = 'haiyangqi.rank.v1';
 const FLOAT_REVEAL_DURATION = 640;
 const DEFAULT_AI_DELAY = 520;
 const REVEAL_AI_DELAY = 700;
+const DEBUG_PARAMS = new URLSearchParams(window.location.search);
+const DEBUG_MODE =
+  DEBUG_PARAMS.has('debug') &&
+  !['0', 'false', 'off', 'no'].includes((DEBUG_PARAMS.get('debug') || '1').toLowerCase());
 
 const boardEl = document.querySelector('#board');
 const statusEl = document.querySelector('#status');
@@ -67,6 +72,10 @@ const rankProtectionEl = document.querySelector('#rank-protection');
 const aiRankNameEl = document.querySelector('#ai-rank-name');
 const aiMatchTypeEl = document.querySelector('#ai-match-type');
 const rankDialogSummaryEl = document.querySelector('#rank-dialog-summary');
+const debugPanelEl = document.querySelector('#debug-panel');
+const debugRankSelectEl = document.querySelector('#debug-rank-select');
+const debugApplyButtonEl = document.querySelector('#debug-apply-rank');
+const debugStatusEl = document.querySelector('#debug-status');
 
 const floatRevealLayer = document.createElement('div');
 floatRevealLayer.className = 'float-reveal-layer';
@@ -77,7 +86,12 @@ let state = createInitialState();
 let selected = null;
 let aiTimer = null;
 let toastTimer = null;
-let rankProfile = loadRankProfile();
+const persistedRankProfile = loadRankProfile();
+const requestedDebugRank = Number.parseInt(DEBUG_PARAMS.get('rank'), 10);
+let debugRankId = getRankById(
+  Number.isFinite(requestedDebugRank) ? requestedDebugRank : getRankFromProfile(persistedRankProfile).id,
+).id;
+let rankProfile = DEBUG_MODE ? createDebugRankProfile(debugRankId) : persistedRankProfile;
 let matchPlayerRankId = getRankFromProfile(rankProfile).id;
 let matchAiRankId = chooseMatchedAiRank(matchPlayerRankId);
 let matchSettled = false;
@@ -95,6 +109,7 @@ function loadRankProfile() {
 }
 
 function saveRankProfile() {
+  if (DEBUG_MODE) return;
   try {
     localStorage.setItem(RANK_STORAGE_KEY, JSON.stringify(rankProfile));
   } catch (error) {
@@ -127,6 +142,7 @@ function countFactionByReveal(faction, revealed) {
 function getStatusText() {
   if (state.winner) {
     const humanWon = state.winner === state.humanFaction;
+    if (DEBUG_MODE) return humanWon ? '你赢了！DEBUG 模式不结算胜点。' : 'AI 获胜。DEBUG 模式不结算胜点。';
     return humanWon ? '你赢了！段位胜点已经结算。' : 'AI 获胜，本局段位胜点已经结算。';
   }
   if (state.draw) return `和棋：${state.drawReason}`;
@@ -198,6 +214,22 @@ function renderLegend() {
   ).join('');
 }
 
+function renderDebugPanel() {
+  if (!debugPanelEl) return;
+  debugPanelEl.hidden = !DEBUG_MODE;
+  if (!DEBUG_MODE) return;
+
+  if (!debugRankSelectEl.options.length) {
+    debugRankSelectEl.innerHTML = RANKS.map(
+      (rank) => `<option value="${rank.id}">${String(rank.id).padStart(2, '0')} · ${rank.name} · AI Lv.${rank.aiLevel}</option>`,
+    ).join('');
+  }
+
+  debugRankSelectEl.value = String(debugRankId);
+  const rank = getRankById(debugRankId);
+  debugStatusEl.textContent = `当前固定：${rank.name} · 对手：${rank.name} AI · 不结算胜点 / 不写入正常存档`;
+}
+
 function renderRankPanel() {
   const rank = getRankFromProfile(rankProfile);
   const progress = getRankProgress(rankProfile);
@@ -207,13 +239,19 @@ function renderRankPanel() {
   const matchType = getMatchDifficultyLabel();
 
   rankNameEl.textContent = rank.name;
-  rankMetaEl.textContent = `历史最高 ${highest.name}`;
+  rankMetaEl.textContent = DEBUG_MODE ? 'DEBUG 固定段位' : `历史最高 ${highest.name}`;
   rankProgressEl.style.width = `${Math.round(progress.percent * 100)}%`;
   rankProgressTextEl.textContent = progress.isPeak
     ? `巅峰胜点 ${progress.current}`
     : `${formatPoints(progress.current)} / ${formatPoints(progress.max)} 胜点`;
-  rankRecordEl.textContent = `胜 ${record.wins} · 负 ${record.losses} · 和 ${record.draws} · 胜率 ${Math.round(record.winRate * 100)}%`;
-  rankProtectionEl.textContent = rankProfile.protectionMatches > 0 ? `晋级保护 ${rankProfile.protectionMatches} 场` : `当前连胜 ${rankProfile.winStreak}`;
+  rankRecordEl.textContent = DEBUG_MODE
+    ? 'DEBUG 模式 · 正常战绩与存档保持不变'
+    : `胜 ${record.wins} · 负 ${record.losses} · 和 ${record.draws} · 胜率 ${Math.round(record.winRate * 100)}%`;
+  rankProtectionEl.textContent = DEBUG_MODE
+    ? '不结算胜点'
+    : rankProfile.protectionMatches > 0
+      ? `晋级保护 ${rankProfile.protectionMatches} 场`
+      : `当前连胜 ${rankProfile.winStreak}`;
   aiRankNameEl.textContent = `${aiRank.name} AI`;
   aiMatchTypeEl.textContent = matchType;
   aiMatchTypeEl.dataset.type = matchType;
@@ -237,6 +275,27 @@ function renderRankDialog() {
 
 function settleMatch(outcome) {
   if (matchSettled) return rankSettlement;
+
+  if (DEBUG_MODE) {
+    const fixedRank = getRankById(debugRankId);
+    rankSettlement = {
+      profile: rankProfile,
+      outcome,
+      aiRankId: debugRankId,
+      pointDelta: 0,
+      totalDelta: 0,
+      oldRank: fixedRank,
+      newRank: fixedRank,
+      promoted: false,
+      demoted: false,
+      protectionUsed: false,
+      protectionPreventedDemotion: false,
+      debug: true,
+    };
+    matchSettled = true;
+    return rankSettlement;
+  }
+
   rankSettlement = settleRankedMatch(rankProfile, outcome, matchAiRankId);
   rankProfile = rankSettlement.profile;
   matchSettled = true;
@@ -271,6 +330,20 @@ function renderResult() {
     resultDescEl.textContent = humanWon ? '你清空了对手的海洋生物。' : '再来一局，换一种翻牌路线试试。';
   }
 
+  if (DEBUG_MODE) {
+    resultRankChangeEl.textContent = `DEBUG · ${settlement.newRank.name}`;
+    resultRankChangeEl.dataset.change = 'same';
+    resultExpDeltaEl.textContent = '不结算';
+    resultExpDeltaEl.dataset.delta = 'same';
+    resultExpBreakdownEl.textContent = '调试模式不会修改正常段位、胜点和战绩';
+    resultRankProgressEl.style.width = `${Math.round(progress.percent * 100)}%`;
+    resultRankProgressTextEl.textContent = progress.isPeak
+      ? `${settlement.newRank.name} · 巅峰段位测试`
+      : `${settlement.newRank.name} · 固定段位 · 晋级需 ${formatPoints(progress.max)} 胜点`;
+    resultProtectionEl.textContent = `对手固定为 ${getRankById(matchAiRankId).name} AI`;
+    return;
+  }
+
   if (settlement.promoted) {
     resultRankChangeEl.textContent = `晋级 · ${settlement.oldRank.name} → ${settlement.newRank.name}`;
     resultRankChangeEl.dataset.change = 'up';
@@ -303,6 +376,7 @@ function renderResult() {
 
 function render() {
   renderBoard();
+  renderDebugPanel();
   renderRankPanel();
   statusEl.textContent = getStatusText();
   turnBadgeEl.textContent = state.turn === 'human' ? '你的回合' : 'AI 回合';
@@ -478,6 +552,27 @@ function scheduleAi(delay = DEFAULT_AI_DELAY) {
   }, delay);
 }
 
+function applyDebugRank() {
+  if (!DEBUG_MODE) return;
+  if (interactionLocked) {
+    toast('演出进行中，请稍后切换段位');
+    return;
+  }
+
+  const nextRankId = getRankById(Number.parseInt(debugRankSelectEl.value, 10)).id;
+  debugRankId = nextRankId;
+  rankProfile = createDebugRankProfile(debugRankId);
+
+  const url = new URL(window.location.href);
+  url.searchParams.set('debug', '1');
+  url.searchParams.set('rank', String(debugRankId));
+  window.history.replaceState(null, '', url);
+
+  startNewMatch();
+  const rank = getRankById(debugRankId);
+  toast(`DEBUG：已切换到 ${rank.name}，对手为同段 AI`);
+}
+
 function startNewMatch() {
   clearTimeout(aiTimer);
   clearCaptureFx(boardEl);
@@ -496,6 +591,11 @@ function startNewMatch() {
 function handleManualRestart() {
   if (interactionLocked) {
     toast('捕食演出进行中，请稍后重开');
+    return;
+  }
+  if (DEBUG_MODE) {
+    startNewMatch();
+    toast('DEBUG：已重新开局，本局不结算胜点');
     return;
   }
   if (!state.winner && !state.draw && state.humanFaction && !matchSettled) {
@@ -530,6 +630,7 @@ closeRankButton.addEventListener('click', () => rankDialog.close());
 rankDialog.addEventListener('click', (event) => {
   if (event.target === rankDialog) rankDialog.close();
 });
+debugApplyButtonEl?.addEventListener('click', applyDebugRank);
 
 preloadRevealAssets();
 renderLegend();

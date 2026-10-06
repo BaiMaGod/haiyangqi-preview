@@ -1,0 +1,148 @@
+/* 吃子特效：棋子中的海洋生物显化、扑食、吞噬并化水回归 */
+.capture-fx-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 18;
+  pointer-events: none;
+  overflow: visible;
+  contain: layout style;
+}
+
+.capture-spirit {
+  position: fixed;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  user-select: none;
+  pointer-events: none;
+  will-change: transform, opacity, filter;
+  transform-origin: center;
+  image-rendering: auto;
+}
+
+.capture-spirit-attacker {
+  z-index: 5;
+  filter:
+    drop-shadow(0 5px 8px rgba(0,0,0,.3))
+    drop-shadow(0 0 7px rgba(133,224,255,.38));
+}
+
+.capture-spirit-defender {
+  z-index: 4;
+  filter:
+    drop-shadow(0 4px 7px rgba(0,0,0,.28))
+    drop-shadow(0 0 5px rgba(159,224,244,.22));
+}
+
+.capture-spirit-coral {
+  filter:
+    drop-shadow(0 5px 8px rgba(0,0,0,.3))
+    drop-shadow(0 0 7px rgba(255,138,128,.32));
+}
+
+.capture-spirit-abyss {
+  filter:
+    drop-shadow(0 5px 8px rgba(0,0,0,.3))
+    drop-shadow(0 0 7px rgba(103,205,255,.38));
+}
+
+.capture-ripple,
+.capture-hit-flash,
+.capture-bubble,
+.capture-stream,
+.capture-return-stream {
+  position: fixed;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.capture-ripple {
+  z-index: 2;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  box-shadow: 0 0 9px currentColor, inset 0 0 7px rgba(255,255,255,.18);
+}
+
+.capture-ripple-coral { color: rgba(255,151,143,.76); }
+.capture-ripple-abyss { color: rgba(115,216,255,.82); }
+
+.capture-hit-flash {
+  z-index: 7;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.92) 0 9%, rgba(184,239,255,.55) 22%, rgba(106,211,255,.18) 48%, transparent 72%);
+}
+
+.capture-hit-flash-coral {
+  background: radial-gradient(circle, rgba(255,255,255,.94) 0 9%, rgba(255,207,196,.58) 22%, rgba(255,132,122,.18) 50%, transparent 72%);
+}
+
+.capture-bubble {
+  z-index: 6;
+  border-radius: 50%;
+  border: 1px solid rgba(210,244,255,.78);
+  background: rgba(121,214,244,.1);
+  box-shadow: inset -1px -1px 2px rgba(25,102,139,.22), 0 0 4px rgba(157,231,255,.25);
+}
+
+.capture-bubble-coral { border-color: rgba(255,209,204,.74); }
+.capture-bubble-abyss { border-color: rgba(199,241,255,.82); }
+
+.capture-stream,
+.capture-return-stream {
+  z-index: 1;
+  height: 12px;
+  border-radius: 999px;
+  transform-origin: left center;
+  background: linear-gradient(90deg, transparent, rgba(156,231,255,.22) 18%, rgba(214,249,255,.58) 58%, transparent);
+  filter: blur(1.5px);
+}
+
+.capture-stream-coral,
+.capture-return-stream-coral {
+  background: linear-gradient(90deg, transparent, rgba(255,172,163,.18) 18%, rgba(255,225,220,.52) 58%, transparent);
+}
+
+.capture-return-stream {
+  height: 15px;
+  z-index: 3;
+  filter: blur(2px);
+}
+
+.board.is-resolving-capture .tile {
+  pointer-events: none;
+}
+
+.tile.capture-source .piece-art,
+.tile.capture-target .piece-art {
+  transition: opacity 90ms ease, filter 90ms ease, transform 90ms ease;
+}
+
+.tile.capture-source .piece-art {
+  opacity: .33;
+  filter: grayscale(.15) brightness(.78) drop-shadow(0 1px 3px rgba(0,0,0,.2));
+  transform: scale(.96);
+}
+
+.tile.capture-target .piece-art {
+  opacity: .38;
+  filter: brightness(.76) saturate(.78) drop-shadow(0 1px 3px rgba(0,0,0,.2));
+  transform: scale(.97);
+}
+
+@media (max-width: 520px) {
+  .capture-stream,
+  .capture-return-stream { height: 9px; }
+
+  .capture-ripple { border-width: 1.5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capture-fx-layer { display: none; }
+
+  .tile.capture-source .piece-art,
+  .tile.capture-target .piece-art {
+    opacity: 1;
+    transform: none;
+    filter: inherit;
+  }
+}

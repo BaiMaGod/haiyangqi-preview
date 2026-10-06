@@ -13,8 +13,9 @@ const V13_PROMOTION_WINS = [
   1, 2, 4, 8, 12, 16, 24, 32, 40, 50, 60, 75, 90, 110, 130, 150, 175, 200, 250,
 ];
 
-const DEPTHS = [0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5];
-const ERRORS = [0.45, 0.40, 0.36, 0.32, 0.28, 0.24, 0.21, 0.18, 0.15, 0.13, 0.11, 0.09, 0.075, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01, 0];
+// V1.6：所有段位整体增强。lookaheadDepth 现在代表真正的公开局面搜索层数。
+const DEPTHS = [1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6];
+const ERRORS = [0.25, 0.22, 0.20, 0.18, 0.16, 0.14, 0.12, 0.10, 0.085, 0.07, 0.055, 0.045, 0.035, 0.028, 0.022, 0.016, 0.011, 0.007, 0.003, 0];
 const BEHAVIORS = [
   '认识合法行动', '更偏好直接吃子', '开始判断棋子价值', '开始规避立即反吃', '统计关键高价值棋子',
   '重视局部站位', '保护虎鲸并追踪藤壶', '计算简单交换', '识别两步战术', '主动诱敌与封锁',
@@ -170,11 +171,15 @@ export function getAiConfig(rankId) {
     level: rank.aiLevel,
     lookaheadDepth: rank.lookaheadDepth,
     errorRate: rank.errorRate,
-    captureWeight: 1 + normalized * 0.9,
-    safetyWeight: 0.12 + normalized * 1.38,
-    positionWeight: 0.2 + normalized * 1.1,
-    informationWeight: 0.18 + normalized * 1.02,
-    threatWeight: 0.1 + normalized * 1.3,
+    captureWeight: 1.15 + normalized * 1.05,
+    safetyWeight: 0.45 + normalized * 1.55,
+    positionWeight: 0.35 + normalized * 1.25,
+    informationWeight: 0.30 + normalized * 1.10,
+    threatWeight: 0.35 + normalized * 1.55,
+    searchDepth: rank.lookaheadDepth,
+    searchBudget: 350 + rank.id * 325,
+    candidateLimit: 4 + Math.floor((rank.id + 1) / 2),
+    opponentModelWeight: 0.55 + normalized * 0.45,
   };
 }
 

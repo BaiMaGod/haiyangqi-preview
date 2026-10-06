@@ -8,8 +8,8 @@ import {
   getFactionForActor,
   getSpecies,
   isAdjacent,
-} from './game.js';
-import { chooseAiAction } from './ai.js';
+} from './game.js?v=ai-explore-20261006-1';
+import { chooseAiAction } from './ai.js?v=ai-explore-20261006-1';
 import { clearCaptureFx, playCaptureFx } from './captureFx.js?v=capture-predation-20261005-1';
 import {
   RANKS,
@@ -22,7 +22,7 @@ import {
   getRankRecord,
   normalizeRankProfile,
   settleRankedMatch,
-} from './rank.js';
+} from './rank.js?v=ai-explore-20261006-1';
 
 const UI_ASSET_BASE = 'assets/ui';
 const RANK_STORAGE_KEY = 'haiyangqi.rank.v1';

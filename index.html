@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./styles.css?v=capture-predation-20261005-1" />
     <link rel="stylesheet" href="./capture.css?v=capture-predation-20261005-1" />
     <link rel="stylesheet" href="./rank.css" />
-    <link rel="stylesheet" href="./home.css?v=homepage-premium-20261007-2" />
+    <link rel="stylesheet" href="./home.css?v=homepage-premium-20261007-3" />
   </head>
   <body class="home-active">
     <div class="ocean-bg" aria-hidden="true">
@@ -18,28 +18,34 @@
 
     <section id="home-screen" class="home-screen" aria-label="海洋棋游戏首页">
       <header class="home-hud">
-        <div class="home-player">
-          <div class="home-avatar-wrap">
-            <img src="./assets/home/royal_orca.webp" alt="" />
-            <span class="home-level-badge">1</span>
-          </div>
-          <div class="home-player-copy">
-            <strong>海洋棋士</strong>
-            <span id="home-rank-name">棋士</span>
-            <div class="home-rank-track"><i id="home-rank-progress"></i></div>
-          </div>
+        <div class="home-player-art-wrap">
+          <img class="home-player-art" src="./assets/home/v2/player.webp?v=3" alt="海洋棋士玩家信息" />
+          <span id="home-rank-name" class="home-rank-live">棋士</span>
+          <i id="home-rank-progress" class="home-rank-progress-live"></i>
         </div>
 
-        <div class="home-resources">
-          <div class="home-resource"><span class="home-resource-icon">🪙</span><b>2,580</b><button type="button" data-home-add aria-label="增加金币">+</button></div>
-          <div class="home-resource"><span class="home-resource-icon">💎</span><b>120</b><button type="button" data-home-add aria-label="增加宝石">+</button></div>
-          <button id="home-mail" class="home-round-btn" type="button" aria-label="邮件">✉</button>
-          <button id="home-settings" class="home-round-btn" type="button" aria-label="设置">⚙</button>
+        <div class="home-resources-art">
+          <button type="button" class="home-asset-control home-currency-control" data-home-add aria-label="金币">
+            <img src="./assets/home/v2/coins.webp?v=3" alt="金币 2580" />
+          </button>
+          <button type="button" class="home-asset-control home-currency-control" data-home-add aria-label="宝石">
+            <img src="./assets/home/v2/diamonds.webp?v=3" alt="宝石 120" />
+          </button>
+          <button id="home-mail" class="home-asset-control home-icon-control" type="button" aria-label="邮件">
+            <img src="./assets/home/v2/mail.webp?v=3" alt="" />
+          </button>
+          <button id="home-settings" class="home-asset-control home-icon-control" type="button" aria-label="设置">
+            <img src="./assets/home/v2/settings.webp?v=3" alt="" />
+          </button>
         </div>
       </header>
 
       <div class="home-showcase">
         <img class="home-logo-art" src="./assets/home/v2/logo.webp?v=2" alt="海洋棋" />
+        <img class="home-bubble-art bubble-left" src="./assets/home/v2/bubbles.webp?v=3" alt="" aria-hidden="true" />
+        <img class="home-bubble-art bubble-right" src="./assets/home/v2/bubbles.webp?v=3" alt="" aria-hidden="true" />
+        <img class="home-wave-art wave-left" src="./assets/home/v2/wave.webp?v=3" alt="" aria-hidden="true" />
+        <img class="home-wave-art wave-right" src="./assets/home/v2/wave.webp?v=3" alt="" aria-hidden="true" />
         <img class="home-stage-art" src="./assets/home/v2/stage.webp?v=2" alt="" aria-hidden="true" />
 
         <button id="home-start" class="home-image-button home-start-button" type="button" aria-label="开始游戏">

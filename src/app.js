@@ -97,6 +97,7 @@ let matchAiRankId = chooseMatchedAiRank(matchPlayerRankId);
 let matchSettled = false;
 let rankSettlement = null;
 let interactionLocked = false;
+let gamePaused = document.body.classList.contains('home-active');
 
 function loadRankProfile() {
   try {
@@ -115,6 +116,7 @@ function saveRankProfile() {
   } catch (error) {
     console.warn('段位数据保存失败。', error);
   }
+  window.dispatchEvent(new Event('haiyangqi:rank-change'));
 }
 
 function signed(value) {
@@ -479,7 +481,7 @@ async function commitHumanAction(action) {
   }
 }
 function handleTileClick(index) {
-  if (interactionLocked || state.turn !== 'human' || state.winner || state.draw) return;
+  if (gamePaused || interactionLocked || state.turn !== 'human' || state.winner || state.draw) return;
   const piece = state.board[index];
 
   if (piece && !piece.revealed) {
@@ -531,9 +533,10 @@ function handleTileClick(index) {
 
 function scheduleAi(delay = DEFAULT_AI_DELAY) {
   clearTimeout(aiTimer);
-  if (state.turn !== 'ai' || state.winner || state.draw) return;
+  if (gamePaused || state.turn !== 'ai' || state.winner || state.draw) return;
 
   aiTimer = setTimeout(async () => {
+    if (gamePaused) return;
     const action = chooseAiAction(state, { rankId: matchAiRankId });
     if (!action) return;
     const revealPiece = action.type === 'reveal' ? state.board[action.index] : null;
@@ -613,6 +616,23 @@ boardEl.addEventListener('click', (event) => {
   const tile = event.target.closest('[data-index]');
   if (!tile) return;
   handleTileClick(Number(tile.dataset.index));
+});
+
+window.addEventListener('haiyangqi:pause', (event) => {
+  if (interactionLocked) {
+    event.preventDefault();
+    toast('演出进行中，请稍后返回首页');
+    return;
+  }
+  gamePaused = true;
+  clearTimeout(aiTimer);
+  floatRevealLayer.replaceChildren();
+});
+
+window.addEventListener('haiyangqi:resume', () => {
+  gamePaused = false;
+  if (state.winner || state.draw) startNewMatch();
+  else scheduleAi();
 });
 
 restartButton.addEventListener('click', handleManualRestart);

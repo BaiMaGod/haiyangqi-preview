@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./styles.css?v=capture-predation-20261005-1" />
     <link rel="stylesheet" href="./capture.css?v=capture-predation-20261005-1" />
     <link rel="stylesheet" href="./rank.css" />
-    <link rel="stylesheet" href="./home.css?v=homepage-layout-20261007-5" />
+    <link rel="stylesheet" href="./home.css?v=homepage-v4-20261007-1" />
   </head>
   <body class="home-active">
     <div class="ocean-bg" aria-hidden="true">
@@ -17,66 +17,83 @@
     </div>
 
     <section id="home-screen" class="home-screen" aria-label="海洋棋游戏首页">
-      <header class="home-hud">
-        <div class="home-player-art-wrap">
-          <img class="home-player-art" src="./assets/home/v2/player.webp?v=3" alt="海洋棋士玩家信息" />
-          <span id="home-rank-name" class="home-rank-live">棋士</span>
-          <i id="home-rank-progress" class="home-rank-progress-live"></i>
+      <div class="home-layout">
+        <header class="home-hud">
+          <button id="home-profile" type="button" class="home-player-art-wrap" aria-label="查看我的段位">
+            <img class="home-player-art" src="./assets/home/v4/runtime/panels/player.webp" alt="" decoding="async" />
+            <span class="home-player-name">海洋棋士</span>
+            <span class="home-player-rank-line"><b id="home-rank-name">棋士</b><small id="home-rank-points">0 / 1</small></span>
+            <span id="home-rank-track" class="home-rank-track" role="progressbar" aria-label="段位晋级进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="home-rank-progress"></i></span>
+          </button>
+          <div class="home-resources-art">
+            <button type="button" class="home-asset-control home-currency-control" data-home-add aria-label="贝壳，暂未开放">
+              <img src="./assets/home/v4/runtime/panels/coins.webp" alt="" decoding="async" /><span class="home-currency-number">—</span>
+            </button>
+            <button type="button" class="home-asset-control home-currency-control" data-home-add aria-label="珍珠，暂未开放">
+              <img src="./assets/home/v4/runtime/panels/diamonds.webp" alt="" decoding="async" /><span class="home-currency-number">—</span>
+            </button>
+            <button id="home-mail" class="home-asset-control home-icon-control" type="button" aria-label="邮件"><img src="./assets/home/v4/runtime/icons/mail.webp" alt="" decoding="async" /></button>
+            <button id="home-settings" class="home-asset-control home-icon-control" type="button" aria-label="首页设置"><img src="./assets/home/v4/runtime/icons/settings.webp" alt="" decoding="async" /></button>
+          </div>
+        </header>
+        <div class="home-showcase">
+          <img class="home-logo-art" src="./assets/home/v4/runtime/logo/home_logo_highres.webp" alt="海洋棋" fetchpriority="high" decoding="async" />
+          <div class="home-stage" aria-hidden="true">
+            <img class="stage-ruins" src="./assets/home/v4/runtime/decor/ruined_columns.webp" alt="" decoding="async" />
+            <img class="stage-bubbles" src="./assets/home/v4/runtime/effects/bubble_group.webp" alt="" decoding="async" />
+            <img class="stage-dolphin" src="./assets/home/v4/runtime/characters/dolphin.webp" alt="" decoding="async" />
+            <img class="stage-shark" src="./assets/home/v4/runtime/characters/shark.webp" alt="" decoding="async" />
+            <img class="stage-orca" src="./assets/home/v3/orca.webp" alt="" fetchpriority="high" decoding="async" />
+            <img class="stage-jellyfish" src="./assets/home/v4/runtime/characters/jellyfish.webp" alt="" decoding="async" />
+            <img class="stage-clownfish" src="./assets/home/v3/clownfish.webp" alt="" decoding="async" />
+            <img class="stage-board" src="./assets/home/v4/runtime/board/luminous_board_scene.webp" alt="" fetchpriority="high" decoding="async" />
+            <img class="stage-octopus" src="./assets/home/v3/octopus.webp" alt="" decoding="async" />
+            <img class="stage-turtle" src="./assets/home/v3/turtle.webp" alt="" decoding="async" />
+            <img class="stage-crab" src="./assets/home/v3/crab.webp" alt="" decoding="async" />
+            <img class="stage-puffer" src="./assets/home/v3/puffer.webp" alt="" decoding="async" />
+            <img class="stage-lobster" src="./assets/home/v4/runtime/characters/lobster.webp" alt="" decoding="async" />
+            <img class="stage-wave" src="./assets/home/v4/runtime/effects/blue_wave.webp" alt="" decoding="async" />
+          </div>
+          <nav class="home-side-nav home-side-left" aria-label="成长与活动">
+            <button class="home-entry" type="button" data-home-info="daily" aria-label="每日奖励"><img src="./assets/home/v4/runtime/entries/daily_reward.webp" alt="" decoding="async" /><span>每日奖励</span></button>
+            <button class="home-entry" type="button" data-home-info="activity" aria-label="活动中心"><img src="./assets/home/v4/runtime/entries/activity_center.webp" alt="" decoding="async" /><span>活动中心</span></button>
+            <button class="home-entry" type="button" data-home-info="missions" aria-label="新手任务"><img src="./assets/home/v4/runtime/entries/beginner_missions.webp" alt="" decoding="async" /><span>新手任务</span></button>
+          </nav>
+          <nav class="home-side-nav home-side-right" aria-label="海洋冒险">
+            <button class="home-entry" type="button" data-home-info="treasure" aria-label="深海寻宝"><img src="./assets/home/v4/runtime/entries/deep_sea_treasure.webp" alt="" decoding="async" /><span>深海寻宝</span></button>
+            <button class="home-entry" type="button" data-home-info="event" aria-label="限时活动"><img src="./assets/home/v4/runtime/entries/limited_event.webp" alt="" decoding="async" /><span>限时活动</span></button>
+          </nav>
         </div>
-
-        <div class="home-resources-art">
-          <button type="button" class="home-asset-control home-currency-control" data-home-add aria-label="金币">
-            <img src="./assets/home/v2/coins.webp?v=3" alt="金币 2580" />
-          </button>
-          <button type="button" class="home-asset-control home-currency-control" data-home-add aria-label="宝石">
-            <img src="./assets/home/v2/diamonds.webp?v=3" alt="宝石 120" />
-          </button>
-          <button id="home-mail" class="home-asset-control home-icon-control" type="button" aria-label="邮件">
-            <img src="./assets/home/v2/mail.webp?v=3" alt="" />
-          </button>
-          <button id="home-settings" class="home-asset-control home-icon-control" type="button" aria-label="设置">
-            <img src="./assets/home/v2/settings.webp?v=3" alt="" />
-          </button>
-        </div>
-      </header>
-
-      <div class="home-showcase">
-        <img class="home-logo-art" src="./assets/home/v2/logo.webp?v=2" alt="海洋棋" />
-        <div class="home-stage" aria-hidden="true">
-          <img class="stage-board" src="./assets/home/v3/board.webp?v=4" alt="" />
-          <img class="stage-orca" src="./assets/home/v3/orca.webp?v=4" alt="" />
-          <img class="stage-puffer" src="./assets/home/v3/puffer.webp?v=4" alt="" />
-          <img class="stage-octopus" src="./assets/home/v3/octopus.webp?v=4" alt="" />
-          <img class="stage-turtle" src="./assets/home/v3/turtle.webp?v=4" alt="" />
-          <img class="stage-crab" src="./assets/home/v3/crab.webp?v=4" alt="" />
-        </div>
-
-        <button id="home-start" class="home-image-button home-start-button" type="button" aria-label="开始游戏">
-          <img src="./assets/home/v2/start.webp?v=2" alt="开始游戏" />
-        </button>
-
-        <nav class="home-modes" aria-label="首页功能">
-          <button id="home-ranked" class="home-image-button home-mode-button" type="button">
-            <img src="./assets/home/v2/ranked.webp?v=2" alt="排位模式" />
-          </button>
-          <button id="home-duo" class="home-image-button home-mode-button" type="button">
-            <img src="./assets/home/v2/duo.webp?v=2" alt="双人对战" />
-          </button>
-          <button id="home-tutorial" class="home-image-button home-mode-button" type="button">
-            <img src="./assets/home/v2/tutorial.webp?v=2" alt="教学" />
-          </button>
-          <button id="home-gallery" class="home-image-button home-mode-button home-gallery-button" type="button" aria-label="图鉴">
-            <span class="home-gallery-card">
-              <img src="./assets/home/v2/gallery.webp?v=2" alt="" />
-              <span class="home-gallery-copy"><b>图鉴</b><small>海洋生物大全</small></span>
-              <span class="home-gallery-arrow">›</span>
-            </span>
-          </button>
+        <nav class="home-actions" aria-label="首页功能">
+          <button id="home-start" class="home-image-button home-start-button" type="button" aria-label="开始游戏"><img src="./assets/home/v4/runtime/buttons/start.webp" alt="" decoding="async" /></button>
+          <p id="home-resume-hint" class="home-resume-hint" hidden>对局进行中 · 点击继续</p>
+          <div class="home-primary-modes">
+            <button id="home-ranked" class="home-image-button" type="button" aria-label="排位模式"><img src="./assets/home/v4/runtime/buttons/ranked.webp" alt="" decoding="async" /></button>
+            <button id="home-duo" class="home-image-button" type="button" aria-label="双人对战"><img src="./assets/home/v4/runtime/buttons/duo.webp" alt="" decoding="async" /></button>
+          </div>
+          <div class="home-utility-modes">
+            <button id="home-tutorial" class="home-image-button" type="button" aria-label="教学"><img src="./assets/home/v4/runtime/buttons/tutorial.webp" alt="" decoding="async" /></button>
+            <button id="home-gallery" class="home-image-button" type="button" aria-label="图鉴"><img src="./assets/home/v4/runtime/buttons/gallery.webp" alt="" decoding="async" /></button>
+            <button id="home-settings-secondary" class="home-image-button" type="button" aria-label="设置"><img src="./assets/home/v4/runtime/buttons/settings.webp" alt="" decoding="async" /></button>
+          </div>
         </nav>
       </div>
-
       <div id="home-toast" class="home-toast" role="status" aria-live="polite"></div>
     </section>
+
+    <dialog id="home-settings-dialog" class="rules-dialog home-dialog">
+      <div class="dialog-head"><h2>首页设置</h2><button type="button" data-home-close aria-label="关闭设置">×</button></div>
+      <div class="home-dialog-body"><label class="home-setting"><span><b>首页动画</b><small>角色漂浮、气泡与海底光线</small></span><input id="home-animation-toggle" type="checkbox" checked /></label><p class="home-dialog-note">设置会保存在当前设备。</p></div>
+    </dialog>
+    <dialog id="home-gallery-dialog" class="rules-dialog home-dialog home-gallery-dialog">
+      <div class="dialog-head"><h2>海洋生物图鉴</h2><button type="button" data-home-close aria-label="关闭图鉴">×</button></div>
+      <div class="home-dialog-body"><p class="home-dialog-note">高等级可吃低等级，同级可互吃。藤壶可以吃虎鲸，虎鲸不能吃藤壶。</p><div id="home-gallery-list" class="home-gallery-list"></div></div>
+    </dialog>
+    <dialog id="home-info-dialog" class="rules-dialog home-dialog">
+      <div class="dialog-head"><h2 id="home-info-title">海洋冒险</h2><button type="button" data-home-close aria-label="关闭">×</button></div>
+      <div class="home-dialog-body"><p id="home-info-description" class="home-info-description"></p><button id="home-info-play" class="primary-btn" type="button">开始排位</button></div>
+    </dialog>
+
 
     <main class="game-shell">
       <header class="topbar">
@@ -85,6 +102,7 @@
           <h1>海洋棋 <span>海底食物链</span></h1>
         </div>
         <div class="top-actions">
+          <button id="home-return" class="secondary-btn" type="button">首页</button>
           <button id="rank-button" class="secondary-btn">段位</button>
           <button id="rules-button" class="secondary-btn">规则</button>
           <button id="restart-button" class="primary-btn">重新开局</button>
@@ -170,6 +188,7 @@
           <small id="result-protection"></small>
         </div>
         <button id="result-restart" class="primary-btn">再来一局</button>
+        <button id="result-home" class="secondary-btn" type="button">返回首页</button>
       </div>
     </div>
 
@@ -194,7 +213,7 @@
       <p class="dialog-note">共 20 个段位。晋级门槛严格按 1、2、4、8、16、32……逐级翻倍；玩家始终挑战同段 AI。段位越高，AI 的错误率更低、风险判断更强、预判更深。</p>
     </dialog>
 
-    <script type="module" src="./src/app.js?v=ai-explore-20261006-1"></script>
-    <script type="module" src="./src/home.js?v=homepage-premium-20261007-2"></script>
+    <script type="module" src="./src/app.js?v=homepage-v4-20261007-1"></script>
+    <script type="module" src="./src/home.js?v=homepage-v4-20261007-1"></script>
   </body>
 </html>

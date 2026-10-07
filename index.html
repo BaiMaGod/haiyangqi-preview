@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./styles.css?v=capture-predation-20261005-1" />
     <link rel="stylesheet" href="./capture.css?v=capture-predation-20261005-1" />
     <link rel="stylesheet" href="./rank.css" />
-    <link rel="stylesheet" href="./home.css?v=homepage-20261007-1" />
+    <link rel="stylesheet" href="./home.css?v=homepage-premium-20261007-2" />
   </head>
   <body class="home-active">
     <div class="ocean-bg" aria-hidden="true">
@@ -19,13 +19,17 @@
     <section id="home-screen" class="home-screen" aria-label="海洋棋游戏首页">
       <header class="home-hud">
         <div class="home-player">
-          <div class="home-avatar-wrap"><img src="./assets/home/royal_orca.webp" alt="" /><span class="home-level-badge">1</span></div>
+          <div class="home-avatar-wrap">
+            <img src="./assets/home/royal_orca.webp" alt="" />
+            <span class="home-level-badge">1</span>
+          </div>
           <div class="home-player-copy">
             <strong>海洋棋士</strong>
             <span id="home-rank-name">棋士</span>
             <div class="home-rank-track"><i id="home-rank-progress"></i></div>
           </div>
         </div>
+
         <div class="home-resources">
           <div class="home-resource"><span class="home-resource-icon">🪙</span><b>2,580</b><button type="button" data-home-add aria-label="增加金币">+</button></div>
           <div class="home-resource"><span class="home-resource-icon">💎</span><b>120</b><button type="button" data-home-add aria-label="增加宝石">+</button></div>
@@ -34,35 +38,30 @@
         </div>
       </header>
 
-      <div class="home-main">
-        <div class="home-logo-wrap">
-          <img src="./assets/home/home_logo.webp" alt="海洋棋" />
-          <p class="home-tagline">翻开棋子 · 大吃小 · 智胜海洋</p>
-        </div>
+      <div class="home-showcase">
+        <img class="home-logo-art" src="./assets/home/v2/logo.webp?v=2" alt="海洋棋" />
+        <img class="home-stage-art" src="./assets/home/v2/stage.webp?v=2" alt="" aria-hidden="true" />
 
-        <div class="home-arena" aria-hidden="true">
-          <div class="home-board-faux"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <img class="home-creature fish" src="./assets/pieces/fish.webp" alt="" />
-          <img class="home-creature seal" src="./assets/pieces/seal.webp" alt="" />
-          <span class="home-royal-sprite royal-octopus"></span>
-          <img class="home-creature orca" src="./assets/home/royal_orca.webp" alt="" />
-          <img class="home-creature shark" src="./assets/pieces/shark.webp" alt="" />
-          <span class="home-royal-sprite royal-puffer"></span>
-          <img class="home-creature shrimp" src="./assets/pieces/shrimp.webp" alt="" />
-          <span class="home-royal-sprite royal-turtle"></span>
-          <span class="home-royal-sprite royal-crab"></span>
-        </div>
+        <button id="home-start" class="home-image-button home-start-button" type="button" aria-label="开始游戏">
+          <img src="./assets/home/v2/start.webp?v=2" alt="开始游戏" />
+        </button>
 
-        <button id="home-start" class="home-start" type="button">开始游戏 ›</button>
+        <nav class="home-modes" aria-label="首页功能">
+          <button id="home-ranked" class="home-image-button home-mode-button" type="button">
+            <img src="./assets/home/v2/ranked.webp?v=2" alt="排位模式" />
+          </button>
+          <button id="home-duo" class="home-image-button home-mode-button" type="button">
+            <img src="./assets/home/v2/duo.webp?v=2" alt="双人对战" />
+          </button>
+          <button id="home-tutorial" class="home-image-button home-mode-button" type="button">
+            <img src="./assets/home/v2/tutorial.webp?v=2" alt="教学" />
+          </button>
+          <button id="home-gallery" class="home-image-button home-gallery-button" type="button">
+            <img src="./assets/home/v2/gallery.webp?v=2" alt="图鉴" />
+          </button>
+        </nav>
       </div>
 
-      <nav class="home-modes" aria-label="首页功能">
-        <button id="home-ranked" class="home-mode-btn primary-mode" type="button"><span class="home-mode-icon">⚔</span><span class="home-mode-copy"><b>排位模式</b><small>冲击更高段位</small></span></button>
-        <button id="home-duo" class="home-mode-btn" type="button"><span class="home-mode-icon">🐙</span><span class="home-mode-copy"><b>双人对战</b><small>与好友一起游戏</small></span></button>
-        <button id="home-tutorial" class="home-mode-btn" type="button"><span class="home-mode-icon">📖</span><span class="home-mode-copy"><b>教学</b><small>快速上手</small></span></button>
-        <button id="home-gallery" class="home-mode-btn" type="button"><span class="home-mode-icon">🐚</span><span class="home-mode-copy"><b>图鉴</b><small>海洋生物大全</small></span></button>
-        <button class="home-mode-btn" type="button" data-home-add><span class="home-mode-icon">🏆</span><span class="home-mode-copy"><b>赛季荣誉</b><small>段位与战绩</small></span></button>
-      </nav>
       <div id="home-toast" class="home-toast" role="status" aria-live="polite"></div>
     </section>
 
@@ -183,6 +182,6 @@
     </dialog>
 
     <script type="module" src="./src/app.js?v=ai-explore-20261006-1"></script>
-    <script type="module" src="./src/home.js?v=homepage-20261007-1"></script>
+    <script type="module" src="./src/home.js?v=homepage-premium-20261007-2"></script>
   </body>
 </html>

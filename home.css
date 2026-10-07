@@ -105,7 +105,7 @@ body.home-active .game-shell,body.home-active .result-overlay,body.home-active>.
  .stage-lobster{right:-1%;bottom:16%;width:19%}
  .stage-clownfish{left:17%;bottom:57%;width:10%}
  .stage-ruins{left:0;bottom:19%;width:32%;opacity:.65}
- .stage-wave{left:-5%;width:110%;bottom:-11%}
+ .stage-wave{left:0;width:100%;bottom:-11%}
  .home-side-nav{top:33%;width:59px;gap:8px}
  .home-side-left{left:-2px}.home-side-right{right:-2px;top:35%;gap:12px}
  .home-entry>span{font-size:10px;bottom:17%;left:3%;right:3%}

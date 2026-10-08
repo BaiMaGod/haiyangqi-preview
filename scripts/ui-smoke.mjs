@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { createDebugRankProfile } from '../src/rank.js';
 
 const target = process.env.GAME_URL || 'http://127.0.0.1:8765/';
 const out = process.env.QA_OUT || 'qa-output';
@@ -16,7 +17,9 @@ let currentPage;
 try {
   for (const [name, width, height, dpr, touch] of profiles) {
     const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: dpr, hasTouch: touch, isMobile: touch, reducedMotion: 'reduce' });
+    await context.addInitScript((profile) => localStorage.setItem('haiyangqi.rank.v1', JSON.stringify(profile)), createDebugRankProfile(20));
     const page = await context.newPage();
+    page.on('dialog', dialog => dialog.accept());
     currentPage = page;
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
@@ -26,7 +29,7 @@ try {
     const report = { name, viewport: { width, height }, dpr, errors, checks: [] };
     reports.push(report);
     const activate = async (selector) => touch ? page.locator(selector).tap() : page.locator(selector).click();
-    await page.goto(target + '?debug=1&rank=20');
+    await page.goto(target);
     await page.locator('#board button').last().waitFor({state: 'attached'});
     await page.evaluate(() => Promise.all([...document.images].map((im) => im.decode().catch(() => {}))));
     await page.screenshot({ path: `${out}/home-${name}.png` });

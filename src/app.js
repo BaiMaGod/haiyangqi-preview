@@ -197,7 +197,7 @@ function renderBoard() {
         : piece.revealed
           ? `${FACTIONS[piece.faction].name} ${getSpecies(piece).name} ${piece.rank}级`
           : '暗牌';
-      return `<button class="${tileClasses(piece, index)}" data-index="${index}" aria-label="${label}">${tileMarkup(piece)}</button>`;
+      return `<button class="${tileClasses(piece, index)}" data-index="${index}" style="--portrait-col:${Math.floor(index / COLS) + 1};--portrait-row:${index % COLS + 1}" aria-label="${label}">${tileMarkup(piece)}</button>`;
     })
     .join('');
 }
@@ -655,3 +655,4 @@ debugApplyButtonEl?.addEventListener('click', applyDebugRank);
 preloadRevealAssets();
 renderLegend();
 render();
+

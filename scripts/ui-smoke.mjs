@@ -12,10 +12,12 @@ const profiles = [
 ];
 const reports = [];
 let failure;
+let currentPage;
 try {
   for (const [name, width, height, dpr, touch] of profiles) {
     const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: dpr, hasTouch: touch, isMobile: touch, reducedMotion: 'reduce' });
     const page = await context.newPage();
+    currentPage = page;
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
@@ -25,7 +27,7 @@ try {
     reports.push(report);
     const activate = async (selector) => touch ? page.locator(selector).tap() : page.locator(selector).click();
     await page.goto(target + '?debug=1&rank=20');
-    await page.locator('#board button').last().waitFor();
+    await page.locator('#board button').last().waitFor({state: 'attached'});
     await page.evaluate(() => Promise.all([...document.images].map((im) => im.decode().catch(() => {}))));
     await page.screenshot({ path: `${out}/home-${name}.png` });
     const profile = await page.evaluate(() => {
@@ -111,7 +113,7 @@ try {
     console.log(name, 'PASS', report.checks.length, 'checks');
     await context.close();
   }
-} catch (error) { failure = String(error.stack || error); console.error(failure); }
+} catch (error) { failure = String(error.stack || error); console.error(failure); await currentPage?.screenshot({path: `${out}/failure.png`, fullPage: true}); }
 finally {
   await writeFile(`${out}/report.json`, JSON.stringify({ target, reports, failure: failure || null }, null, 2));
   await browser.close();

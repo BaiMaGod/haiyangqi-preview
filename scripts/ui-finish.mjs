@@ -69,6 +69,7 @@ try {
   await writeFile(`${out}/finish-report.json`, JSON.stringify({ title, turns, captures, errors, settlement: true, restart: true, resume: true }, null, 2));
 } catch (error) {
   failure = String(error.stack || error);
+  await writeFile(`${out}/animation-diagnostics.json`, JSON.stringify(await page.evaluate(() => ({hidden: document.hidden, animations: document.getAnimations().map(a=>({time:a.currentTime,state:a.playState,pending:a.pending,duration:a.effect?.getTiming().duration}))})),null,2));
   await page.screenshot({ path: `${out}/finish-failure.png`, fullPage: true });
   await writeFile(`${out}/finish-report.json`, JSON.stringify({ failure, turns, captures, errors }, null, 2));
   console.error(failure);

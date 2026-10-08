@@ -65,6 +65,18 @@ function transformAt(dx, dy, scale, flip = 1, rotation = 0) {
   return 'translate(-50%, -50%) translate3d(' + dx + 'px,' + dy + 'px,0) scale(' + scale + ') scaleX(' + flip + ') rotate(' + rotation + 'deg)';
 }
 
+async function finishAnimation(animation, timeoutMs) {
+  let timeout;
+  try {
+    await Promise.race([
+      animation.finished.catch(() => {}),
+      new Promise((resolve) => { timeout = window.setTimeout(resolve, timeoutMs); }),
+    ]);
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
 async function animateAndCommit(element, keyframes, options) {
   const frames = Array.isArray(keyframes) ? keyframes : [keyframes];
   const finalFrame = frames[frames.length - 1] || {};
@@ -79,7 +91,7 @@ async function animateAndCommit(element, keyframes, options) {
 
   const animation = element.animate(frames, { fill: 'forwards', ...options });
   try {
-    await animation.finished;
+    await finishAnimation(animation, duration + delay + 250);
   } catch {
     // Animation cancellation is safe during cleanup/restart.
   }
@@ -93,7 +105,7 @@ function fireAndForget(element, keyframes, options) {
     return;
   }
   const animation = element.animate(keyframes, { fill: 'forwards', ...options });
-  animation.finished.catch(() => {}).finally(() => element.remove());
+  finishAnimation(animation, Number(options?.duration ?? 0) + Number(options?.delay ?? 0) + 250).finally(() => { animation.cancel(); element.remove(); });
 }
 
 function makeSpirit(species, faction, point, size, role) {
@@ -283,6 +295,7 @@ export async function playCaptureFx({
 
   spawnRipple(start, faction, Math.max(32, fromRect.width * 0.72), 0.62);
 
+  try {
   const attackerManifest = animateAndCommit(
     attackerSpirit,
     [
@@ -384,7 +397,10 @@ export async function playCaptureFx({
   );
 
   spawnRipple(start, faction, Math.max(28, fromRect.width * 0.6), 0.45);
-  attackerSpirit.remove();
-  defenderSpirit.remove();
-  clearTileState(boardEl);
+  } finally {
+    attackerSpirit.remove();
+    defenderSpirit.remove();
+    clearTileState(boardEl);
+  }
 }
+

@@ -7,11 +7,11 @@ body.home-active .game-shell,body.home-active .result-overlay,body.home-active>.
 .home-hud{position:relative;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:12px;flex:none;min-height:70px}
 .home-player-art-wrap{position:relative;width:255px;flex:none;padding:0;border:0;background:transparent;color:#fff;cursor:pointer;text-align:left;font:inherit;filter:drop-shadow(0 4px 8px #00192c99)}
 .home-player-art{display:block;width:100%;height:auto;pointer-events:none}
-.home-player-name{position:absolute;left:35%;right:10%;top:26%;font-size:13px;font-weight:800;line-height:1.1;white-space:nowrap;text-shadow:0 2px 3px #001426}
-.home-player-rank-line{position:absolute;left:37%;right:10%;top:48%;display:flex;align-items:center;gap:9px;line-height:1.1;white-space:nowrap;text-shadow:0 2px 3px #001426}
+.home-player-name{position:absolute;left:40%;right:13%;top:35%;transform:translateY(-50%);font-size:13px;font-weight:800;line-height:1.1;white-space:nowrap;text-shadow:0 2px 3px #001426}
+.home-player-rank-line{position:absolute;left:46%;right:13%;top:62%;transform:translateY(-50%);display:flex;align-items:center;gap:9px;line-height:1.1;white-space:nowrap;text-shadow:0 2px 3px #001426}
 .home-player-rank-line b{font-size:12px;color:#ffe080}
 .home-player-rank-line small{font-size:9px;color:#d2f4ff;font-variant-numeric:tabular-nums}
-.home-rank-track{position:absolute;left:38%;right:12%;top:66%;height:3px;border-radius:5px;overflow:hidden;background:#032843;box-shadow:0 0 0 1px #8ce4ef44}
+.home-rank-track{position:absolute;left:46%;right:14%;top:75%;height:3px;border-radius:5px;overflow:hidden;background:#032843;box-shadow:0 0 0 1px #8ce4ef44}
 .home-rank-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f6a82e,#ffed99);border-radius:5px;transition:width .25s}
 .home-resources-art{display:flex;align-items:center;justify-content:flex-end;gap:4px;flex:none}
 .home-asset-control{position:relative;border:0;background:transparent;color:#fff;padding:0;margin:0;cursor:pointer;transition:transform .15s,filter .15s}
@@ -81,11 +81,11 @@ body.home-active .game-shell,body.home-active .result-overlay,body.home-active>.
  .home-layout{min-height:540px;padding:max(4px,env(safe-area-inset-top)) 8px max(10px,env(safe-area-inset-bottom))}
  .home-hud{min-height:60px;gap:3px;align-items:flex-start}
  .home-player-art-wrap{width:46%;max-width:218px;margin-top:1px}
- .home-player-name{font-size:clamp(9px,2.7vw,12px);top:27%;left:34%}
- .home-player-rank-line{left:36%;top:49%;gap:5px}
+ .home-player-name{font-size:clamp(9px,2.7vw,12px);top:35%;left:40%}
+ .home-player-rank-line{left:46%;top:62%;gap:5px}
  .home-player-rank-line b{font-size:clamp(8px,2.5vw,11px)}
  .home-player-rank-line small{font-size:7px}
- .home-rank-track{height:2px;top:67%}
+ .home-rank-track{height:2px;top:75%}
  .home-resources-art{max-width:53%;display:grid;grid-template-columns:1fr 1fr 28px 28px;gap:1px;align-items:start;padding-top:9px}
  .home-currency-control{width:100%;min-height:28px;display:grid;align-items:center}
  .home-currency-number{font-size:11px;top:39%}
@@ -141,3 +141,4 @@ body.home-active .game-shell,body.home-active .result-overlay,body.home-active>.
  .home-toast{bottom:28%;font-size:12px}
 }
 @media(prefers-reduced-motion:reduce){.home-stage img,.home-screen.leaving{animation:none}.home-image-button,.home-entry,.home-asset-control,.home-rank-track i{transition:none}}
+

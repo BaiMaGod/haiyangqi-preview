@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="./styles.css?v=capture-predation-20261005-1" />
     <link rel="stylesheet" href="./capture.css?v=capture-predation-20261005-1" />
     <link rel="stylesheet" href="./rank.css" />
-    <link rel="stylesheet" href="./home.css?v=homepage-v4-20261007-3" />
+    <link rel="stylesheet" href="./home.css?v=ocean-ui-20261008-2" />
+    <link rel="stylesheet" href="./battle.css?v=ocean-ui-20261008-2" />
   </head>
   <body class="home-active">
     <div class="ocean-bg" aria-hidden="true">
@@ -97,9 +98,9 @@
 
     <main class="game-shell">
       <header class="topbar">
-        <div>
-          <p class="eyebrow">6 × 10 · 翻牌策略棋</p>
-          <h1>海洋棋 <span>海底食物链</span></h1>
+        <div class="battle-brand">
+          <img src="./assets/home/v4/runtime/logo/home_logo_highres.webp" alt="海洋棋" class="battle-logo" />
+          <div><p class="eyebrow">深海竞技场</p><h1>排位对局 <span>6 × 10 · 翻牌策略棋</span></h1></div>
         </div>
         <div class="top-actions">
           <button id="home-return" class="secondary-btn" type="button">首页</button>
@@ -136,7 +137,7 @@
 
       <section class="hud" aria-label="对局信息">
         <article class="team-card player-card">
-          <div class="avatar">你</div>
+          <div class="avatar battle-player-avatar" aria-label="玩家头像"><img src="./assets/home/v4/runtime/panels/player.webp" alt="" /></div>
           <div>
             <small>玩家阵营</small>
             <strong id="player-faction">等待首翻</strong>
@@ -151,7 +152,7 @@
         </article>
 
         <article class="team-card ai-card">
-          <div class="avatar">AI</div>
+          <div class="avatar battle-ai-avatar"><img src="./assets/home/v3/orca.webp" alt="" /><span>AI</span></div>
           <div>
             <small>电脑阵营</small>
             <strong>另一阵营</strong>
@@ -213,7 +214,8 @@
       <p class="dialog-note">共 20 个段位。晋级门槛严格按 1、2、4、8、16、32……逐级翻倍；玩家始终挑战同段 AI。段位越高，AI 的错误率更低、风险判断更强、预判更深。</p>
     </dialog>
 
-    <script type="module" src="./src/app.js?v=homepage-v4-20261007-3"></script>
+    <script type="module" src="./src/app.js?v=ocean-ui-20261008-2"></script>
     <script type="module" src="./src/home.js?v=homepage-v4-20261007-3"></script>
   </body>
 </html>
+

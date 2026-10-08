@@ -1,13 +1,11 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { createDebugRankProfile } from '../src/rank.js';
 
 const out = 'qa-output';
 await mkdir(out, { recursive: true });
 const browser = await chromium.launch();
 const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
-await context.addInitScript((profile) => localStorage.setItem('haiyangqi.rank.v1', JSON.stringify(profile)), createDebugRankProfile(20));
 const page = await context.newPage();
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
@@ -20,12 +18,12 @@ try {
   await page.locator('#home-start').tap();
   await page.locator('#home-screen').waitFor({ state: 'hidden' });
   for (; turns < 600 && !(await page.locator('#result-overlay').isVisible()); turns++) {
+    const started = Date.now();
     const before = +(await page.locator('#move-count').textContent());
     const action = await page.evaluate(() => {
       const faction = document.querySelector('#player-faction').dataset.faction;
       const tiles = [...document.querySelectorAll('#board button')].map((t) => ({ index: +t.dataset.index, hidden: t.classList.contains('hidden'), empty: t.classList.contains('empty'), own: t.classList.contains('faction-' + faction), rank: +t.querySelector('.piece-rank')?.textContent }));
       const hidden = tiles.find((t) => t.hidden);
-      if (hidden) return { type: 'flip', to: hidden.index };
       const moves = [];
       for (const tile of tiles.filter((t) => t.own)) {
         for (const target of tiles) {
@@ -36,6 +34,7 @@ try {
           else if (!target.own && !target.hidden && ((tile.rank === 1 && target.rank === 8) || (tile.rank >= target.rank && !(tile.rank === 8 && target.rank === 1)))) return { type: 'capture', from: tile.index, to: target.index };
         }
       }
+      if (hidden) return { type: 'flip', to: hidden.index };
       return moves.length ? moves[Math.floor(Math.random() * moves.length)] : null;
     });
     assert(action, 'a visible legal action exists before match ends');
@@ -49,7 +48,7 @@ try {
       }
     }
     await page.waitForFunction((before) => document.querySelector('#result-overlay').classList.contains('show') || (+document.querySelector('#move-count').textContent >= before + 2 && document.querySelector('#turn-badge').dataset.turn === 'human'), before, { timeout: 15000 });
-    if (turns % 20 === 0) console.log('real match', turns, 'human actions,', captures, 'human captures');
+    if (action.type === 'capture' || turns % 20 === 0) console.log('real match', turns, 'human actions,', captures, 'human captures,', Date.now() - started, 'ms');
   }
   assert(await page.locator('#result-overlay').isVisible(), 'a real played match reaches settlement');
   assert(captures > 0, 'real capture input exercised the resized board');
@@ -66,7 +65,7 @@ try {
   await page.locator('#board button[data-index="59"]').tap();
   await page.waitForFunction(() => +document.querySelector('#move-count').textContent >= 2);
   assert.deepEqual(errors, []);
-  await writeFile(`${out}/finish-report.json`, JSON.stringify({ title, turns, captures, errors, settlement: true, restart: true, resume: true }, null, 2));
+  await writeFile(`${out}/finish-report.json`, JSON.stringify({ profile: 'fresh player, default rank', title, turns, captures, errors, settlement: true, restart: true, resume: true }, null, 2));
 } catch (error) {
   failure = String(error.stack || error);
   await writeFile(`${out}/animation-diagnostics.json`, JSON.stringify(await page.evaluate(() => ({hidden: document.hidden, animations: document.getAnimations().map(a=>({time:a.currentTime,state:a.playState,pending:a.pending,duration:a.effect?.getTiming().duration}))})),null,2));

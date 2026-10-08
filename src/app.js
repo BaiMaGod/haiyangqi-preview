@@ -10,7 +10,7 @@ import {
   isAdjacent,
 } from './game.js?v=ai-explore-20261006-1';
 import { chooseAiAction } from './ai.js?v=ai-explore-20261006-1';
-import { clearCaptureFx, playCaptureFx } from './captureFx.js?v=ocean-ui-20261008-2';
+import { clearCaptureFx, playCaptureFx } from './captureFx.js?v=20260930-16';
 import {
   RANKS,
   createDebugRankProfile,

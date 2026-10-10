@@ -263,15 +263,17 @@ export async function playCaptureFx(options) {
   const run = new AbortController();
   activeRuns.add(run);
   const deadline = window.setTimeout(() => run.abort(), 2500);
+  let completed = false;
   try {
     await runCaptureFx(options, run.signal);
+    completed = true;
   } catch (error) {
     if (!run.signal.aborted) throw error;
   } finally {
     window.clearTimeout(deadline);
     activeRuns.delete(run);
-    // Cancel any remaining particles as well as the two animal spirits.
-    if (activeRuns.size === 0) clearCaptureFx(options.boardEl);
+    // Keep the normal final ripple; abnormal/canceled runs clean up everything.
+    if (!completed && activeRuns.size === 0) clearCaptureFx(options.boardEl);
   }
 }
 

@@ -9,8 +9,8 @@ import {
   getSpecies,
   isAdjacent,
 } from './game.js?v=ai-explore-20261006-1';
-import { chooseAiAction } from './ai.js?v=ai-explore-20261006-1';
-import { clearCaptureFx, playCaptureFx } from './captureFx.js?v=capture-predation-20261005-1';
+import { createAiClient } from './aiClient.js?v=async-ai-20261010-1';
+import { clearCaptureFx, playCaptureFx } from './captureFx.js?v=capture-lifecycle-20261010-1';
 import {
   RANKS,
   createDebugRankProfile,
@@ -85,6 +85,8 @@ document.body.appendChild(floatRevealLayer);
 let state = createInitialState();
 let selected = null;
 let aiTimer = null;
+const aiClient = createAiClient();
+let aiRevision = 0;
 let toastTimer = null;
 const persistedRankProfile = loadRankProfile();
 const requestedDebugRank = Number.parseInt(DEBUG_PARAMS.get('rank'), 10);
@@ -533,16 +535,19 @@ function handleTileClick(index) {
 
 function scheduleAi(delay = DEFAULT_AI_DELAY) {
   clearTimeout(aiTimer);
+  aiClient.cancel();
+  const revision = ++aiRevision;
   if (gamePaused || state.turn !== 'ai' || state.winner || state.draw) return;
 
   aiTimer = setTimeout(async () => {
     if (gamePaused) return;
-    const action = chooseAiAction(state, { rankId: matchAiRankId });
-    if (!action) return;
-    const revealPiece = action.type === 'reveal' ? state.board[action.index] : null;
-    interactionLocked = true;
     try {
+      const action = await aiClient.choose(state, matchAiRankId);
+      if (!action || revision !== aiRevision || gamePaused || state.turn !== 'ai') return;
+      const revealPiece = action.type === 'reveal' ? state.board[action.index] : null;
+      interactionLocked = true;
       await playCaptureBeforeAction(action);
+      if (revision !== aiRevision) return;
       state = applyAction(state, 'ai', action);
       render();
       if (revealPiece) showRevealFx(action.index, revealPiece);
@@ -550,7 +555,7 @@ function scheduleAi(delay = DEFAULT_AI_DELAY) {
       console.error(error);
       toast('AI 行动异常，请重新开始');
     } finally {
-      interactionLocked = false;
+      if (revision === aiRevision) interactionLocked = false;
     }
   }, delay);
 }
@@ -578,6 +583,8 @@ function applyDebugRank() {
 
 function startNewMatch() {
   clearTimeout(aiTimer);
+  aiRevision += 1;
+  aiClient.cancel();
   clearCaptureFx(boardEl);
   interactionLocked = false;
   floatRevealLayer.replaceChildren();
@@ -626,6 +633,8 @@ window.addEventListener('haiyangqi:pause', (event) => {
   }
   gamePaused = true;
   clearTimeout(aiTimer);
+  aiRevision += 1;
+  aiClient.cancel();
   floatRevealLayer.replaceChildren();
 });
 
@@ -655,4 +664,5 @@ debugApplyButtonEl?.addEventListener('click', applyDebugRank);
 preloadRevealAssets();
 renderLegend();
 render();
+
 

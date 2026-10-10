@@ -14,15 +14,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: npm test
       - run: npm install --no-save playwright@1.51.1
       - run: npx playwright install --with-deps chromium
       - run: |
           python3 -m http.server 8765 > /tmp/ocean-http.log 2>&1 &
           node scripts/ui-smoke.mjs
           node scripts/ui-finish.mjs
+          node scripts/ui-lifecycle.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: ocean-ui-browser-evidence
           path: qa-output
           retention-days: 7
+

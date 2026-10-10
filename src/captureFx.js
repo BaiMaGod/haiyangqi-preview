@@ -22,9 +22,16 @@ const BUBBLE_VECTORS = [
 ];
 
 let captureLayer = null;
+const activeRuns = new Set();
+const activeAnimations = new Set();
 
-function sleep(ms) {
-  return new Promise((resolve) => window.setTimeout(resolve, ms));
+function sleep(ms, signal) {
+  return new Promise((resolve, reject) => {
+    const abort = () => { window.clearTimeout(timer); reject(signal.reason); };
+    const timer = window.setTimeout(() => { signal?.removeEventListener('abort', abort); resolve(); }, ms);
+    if (signal?.aborted) abort();
+    else signal?.addEventListener('abort', abort, { once: true });
+  });
 }
 
 function reducedMotion() {
@@ -65,26 +72,41 @@ function transformAt(dx, dy, scale, flip = 1, rotation = 0) {
   return 'translate(-50%, -50%) translate3d(' + dx + 'px,' + dy + 'px,0) scale(' + scale + ') scaleX(' + flip + ') rotate(' + rotation + 'deg)';
 }
 
-async function animateAndCommit(element, keyframes, options) {
+async function animateFrame(element, keyframes, options, signal) {
+  signal?.throwIfAborted();
   const frames = Array.isArray(keyframes) ? keyframes : [keyframes];
   const finalFrame = frames[frames.length - 1] || {};
   const duration = Number(options?.duration ?? 0);
   const delay = Number(options?.delay ?? 0);
 
   if (!element.animate) {
-    await sleep(duration + delay);
+    await sleep(duration + delay, signal);
     Object.assign(element.style, finalFrame);
     return;
   }
 
   const animation = element.animate(frames, { fill: 'forwards', ...options });
+  activeAnimations.add(animation);
+  let timer;
+  let abort;
   try {
-    await animation.finished;
-  } catch {
-    // Animation cancellation is safe during cleanup/restart.
+    await new Promise((resolve, reject) => {
+      abort = () => reject(signal.reason);
+      signal?.addEventListener('abort', abort, { once: true });
+      // A suspended animation must not hold the game state hostage.
+      timer = window.setTimeout(resolve, duration + delay + 180);
+      animation.finished.then(resolve, resolve);
+    });
+    signal?.throwIfAborted();
+    Object.assign(element.style, finalFrame);
+  } catch (error) {
+    if (!signal?.aborted) throw error;
+  } finally {
+    window.clearTimeout(timer);
+    signal?.removeEventListener('abort', abort);
+    activeAnimations.delete(animation);
+    animation.cancel();
   }
-  Object.assign(element.style, finalFrame);
-  animation.cancel();
 }
 
 function fireAndForget(element, keyframes, options) {
@@ -93,7 +115,15 @@ function fireAndForget(element, keyframes, options) {
     return;
   }
   const animation = element.animate(keyframes, { fill: 'forwards', ...options });
-  animation.finished.catch(() => {}).finally(() => element.remove());
+  activeAnimations.add(animation);
+  const timer = window.setTimeout(cleanup, Number(options?.duration ?? 0) + Number(options?.delay ?? 0) + 180);
+  function cleanup() {
+    window.clearTimeout(timer);
+    activeAnimations.delete(animation);
+    animation.cancel();
+    element.remove();
+  }
+  animation.finished.then(cleanup, cleanup);
 }
 
 function makeSpirit(species, faction, point, size, role) {
@@ -222,11 +252,30 @@ function clearTileState(boardEl) {
 }
 
 export function clearCaptureFx(boardEl = document.querySelector('#board')) {
+  for (const run of activeRuns) run.abort();
+  for (const animation of activeAnimations) animation.cancel();
+  activeAnimations.clear();
   captureLayer?.replaceChildren();
   clearTileState(boardEl);
 }
 
-export async function playCaptureFx({
+export async function playCaptureFx(options) {
+  const run = new AbortController();
+  activeRuns.add(run);
+  const deadline = window.setTimeout(() => run.abort(), 2500);
+  try {
+    await runCaptureFx(options, run.signal);
+  } catch (error) {
+    if (!run.signal.aborted) throw error;
+  } finally {
+    window.clearTimeout(deadline);
+    activeRuns.delete(run);
+    // Cancel any remaining particles as well as the two animal spirits.
+    if (activeRuns.size === 0) clearCaptureFx(options.boardEl);
+  }
+}
+
+async function runCaptureFx({
   boardEl,
   fromIndex,
   toIndex,
@@ -234,7 +283,9 @@ export async function playCaptureFx({
   defender,
   attackerSpecies,
   defenderSpecies,
-}) {
+}, signal) {
+  const animateAndCommit = (element, frames, options) => animateFrame(element, frames, options, signal);
+  const pause = (ms) => sleep(ms, signal);
   if (!boardEl || !attacker || !defender || !attackerSpecies || !defenderSpecies || reducedMotion()) return;
 
   const fromTile = boardEl.querySelector('[data-index="' + fromIndex + '"]');
@@ -292,7 +343,7 @@ export async function playCaptureFx({
     { duration: CAPTURE_TIMING.manifest, easing: 'cubic-bezier(.2,.75,.25,1)' },
   );
 
-  await sleep(CAPTURE_TIMING.defenderManifestDelay);
+  await pause(CAPTURE_TIMING.defenderManifestDelay);
   const defenderManifest = animateAndCommit(
     defenderSpirit,
     [
@@ -341,7 +392,7 @@ export async function playCaptureFx({
   spawnBubbles(hitPoint, faction, power);
   shakeBoard(boardEl, power);
 
-  await sleep(CAPTURE_TIMING.hitStop);
+  await pause(CAPTURE_TIMING.hitStop);
 
   const attackerHitScale = power === 3 ? 1.43 : power === 2 ? 1.37 : 1.32;
   const devourPromise = animateAndCommit(
@@ -354,7 +405,7 @@ export async function playCaptureFx({
     { duration: CAPTURE_TIMING.devour, easing: 'cubic-bezier(.55,.05,.8,.3)' },
   );
 
-  await sleep(24);
+  await pause(24);
   const swallowPromise = animateAndCommit(
     attackerSpirit,
     [
@@ -388,3 +439,4 @@ export async function playCaptureFx({
   defenderSpirit.remove();
   clearTileState(boardEl);
 }
+

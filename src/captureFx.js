@@ -266,7 +266,7 @@ export async function playCaptureFx(options) {
   let completed = false;
   try {
     await runCaptureFx(options, run.signal);
-    completed = true;
+    completed = !run.signal.aborted;
   } catch (error) {
     if (!run.signal.aborted) throw error;
   } finally {

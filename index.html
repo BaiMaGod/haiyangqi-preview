@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#061d31" />
     <title>海洋棋：海底食物链</title>
-    <link rel="stylesheet" href="./styles.css?v=9a77f2a" />
-    <link rel="stylesheet" href="./capture.css?v=9a77f2a" />
+    <link rel="stylesheet" href="./styles.css?v=ocean-buttons-v1" />
+    <link rel="stylesheet" href="./capture.css?v=ocean-buttons-v1" />
     <link rel="stylesheet" href="./rank.css" />
-    <link rel="stylesheet" href="./home.css?v=9a77f2a" />
-    <link rel="stylesheet" href="./battle.css?v=9a77f2a" />
-  <link rel="stylesheet" href="./rogue.css?v=9a77f2a" />
+    <link rel="stylesheet" href="./home.css?v=ocean-buttons-v1" />
+    <link rel="stylesheet" href="./battle.css?v=ocean-buttons-v1" />
+  <link rel="stylesheet" href="./rogue.css?v=ocean-buttons-v1" />
   </head>
   <body class="home-active">
     <div class="ocean-bg" aria-hidden="true">
@@ -67,11 +67,11 @@
           </nav>
         </div>
         <nav class="home-actions" aria-label="首页功能">
-          <button id="home-start" class="home-image-button home-start-button" type="button" aria-label="普通模式"><span class="mode-entry mode-normal"><b>普通模式</b><small>经典翻棋 · 策略对弈</small></span></button>
+          <button id="home-start" class="home-image-button home-start-button" type="button" aria-label="普通模式"><img src="./assets/home/v4/runtime/buttons/normal-mode-v1.webp" alt="普通模式" decoding="async" /></button>
           <p id="home-resume-hint" class="home-resume-hint" hidden>对局进行中 · 点击继续</p>
           <div class="home-primary-modes">
             <button id="home-ranked" class="home-image-button" type="button" aria-label="排位模式"><img src="./assets/home/v4/runtime/buttons/ranked.webp" alt="" decoding="async" /></button>
-            <button id="home-duo" class="home-image-button" type="button" aria-label="肉鸽模式"><span class="mode-entry mode-rogue"><b>肉鸽模式</b><small>吃子奇遇 · 流派构筑</small></span></button>
+            <button id="home-duo" class="home-image-button" type="button" aria-label="肉鸽模式"><img src="./assets/home/v4/runtime/buttons/rogue-mode-v1.webp" alt="肉鸽模式" decoding="async" /></button>
           </div>
           <div class="home-utility-modes">
             <button id="home-tutorial" class="home-image-button" type="button" aria-label="教学"><img src="./assets/home/v4/runtime/buttons/tutorial.webp" alt="" decoding="async" /></button>
@@ -228,8 +228,8 @@
     </dialog>
 
     <dialog id="rogue-dialog" class="rogue-dialog"><header><h2 id="rogue-title">本局奇遇</h2><div class="rogue-dialog-actions"><button id="rogue-home" type="button">首页</button><button id="rogue-close" type="button">关闭</button></div></header><div id="rogue-body"></div></dialog><span id="rogue-notice" class="sr-only" aria-live="polite"></span>
-    <script type="module" src="./src/app.js?v=9a77f2a"></script>
-    <script type="module" src="./src/home.js?v=9a77f2a"></script>
+    <script type="module" src="./src/app.js?v=ocean-buttons-v1"></script>
+    <script type="module" src="./src/home.js?v=ocean-buttons-v1"></script>
   </body>
 </html>
 

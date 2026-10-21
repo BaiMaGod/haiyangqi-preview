@@ -1,21 +1,25 @@
 {
-  "sourceCommit": "e667815f2881c9a9efbf5b9c3d74c5f7da9a21e8",
+  "sourceCommit": "f006affd8b0e07ba0f47da1edf2a0a53bfbde604",
   "buildType": "existing-static-web-esbuild",
   "ruleTests": {
     "passed": 86,
     "failed": 0
   },
   "browserQA": {
-    "stagingCommit": "77190a2415e174a7a5442adc2bd719b0deadd3ab",
-    "checks": 25,
-    "scope": "Real UI inputs; responsive iframe viewports; development fixtures isolated from normal saves",
+    "stagingCommit": "4dd2aa2a5c972fc53ac35c1beb0539c34cea760e",
     "profiles": [
-      "360x640",
-      "390x844",
-      "430x932",
-      "844x390",
-      "1366x768"
+      "rogue:360x640",
+      "rogue:390x844",
+      "rogue:430x932",
+      "rogue:844x390",
+      "rogue:1366x768",
+      "normal:360x640",
+      "normal:390x844",
+      "normal:430x932",
+      "normal:844x390",
+      "normal:1366x768"
     ],
+    "scope": "Real UI inputs and browser viewport override; isolated development fixtures; full checks in source docs/ocean-followup-qa-20261021.json",
     "physicalDevicesTested": false
   },
   "productionModules": [
@@ -24,5 +28,5 @@
     "src/aiWorker.js"
   ],
   "developmentFixturesExcluded": true,
-  "uiAssetStyle": "Original ocean lobby references, imagegen button artwork, fixed shell/corner sprites"
+  "uiAssetStyle": "Preserved illustrated ocean assets; compact status badges and 44px touch targets"
 }

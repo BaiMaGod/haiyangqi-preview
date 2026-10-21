@@ -1,32 +1,50 @@
 {
-  "sourceCommit": "f006affd8b0e07ba0f47da1edf2a0a53bfbde604",
+  "sourceCommit": "4b83180b2d19c43aa07dc0729f2cc8163485324e",
   "buildType": "existing-static-web-esbuild",
   "ruleTests": {
     "passed": 86,
     "failed": 0
   },
-  "browserQA": {
-    "stagingCommit": "4dd2aa2a5c972fc53ac35c1beb0539c34cea760e",
-    "profiles": [
-      "rogue:360x640",
-      "rogue:390x844",
-      "rogue:430x932",
-      "rogue:844x390",
-      "rogue:1366x768",
-      "normal:360x640",
-      "normal:390x844",
-      "normal:430x932",
-      "normal:844x390",
-      "normal:1366x768"
+  "browserViewportSizes": [
+    [
+      320,
+      568
     ],
-    "scope": "Real UI inputs and browser viewport override; isolated development fixtures; full checks in source docs/ocean-followup-qa-20261021.json",
-    "physicalDevicesTested": false
-  },
-  "productionModules": [
-    "src/app.js",
-    "src/home.js",
-    "src/aiWorker.js"
+    [
+      360,
+      640
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      430,
+      932
+    ],
+    [
+      844,
+      390
+    ],
+    [
+      1366,
+      768
+    ]
   ],
-  "developmentFixturesExcluded": true,
-  "uiAssetStyle": "Preserved illustrated ocean assets; compact status badges and 44px touch targets"
+  "browserChecks": "Both modes, real flip/AI response, restart cancel/confirm, resume, mode switching, actual capture settlement/replay and rogue draft/skill targets",
+  "files": {
+    "capture.css": "163d3e5488509a7ef54e1fb7d1086869129c3fb3852dd6da5b04c76c5e1938f3",
+    "rogue.css": "115aa11518b8d19ac6a0b9c5aa63aa3e2d0d3ec0670d916818c1afa55ffa82c5",
+    "index.html": "643629eb55700684b2f237e74a9b351511f58aa3127798ca5474c24fc3c0495c",
+    ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "home.css": "10f299324ae29bd637191a93431df8b182bbb71c049acdb461a0b276795757b3",
+    "battle.css": "523471f17dff06f433eac96adc7c1a1c7157b61e70d24058fbafc77bae7de258",
+    "rank.css": "e54435a17c3ff9240251ca7f4421935b7b9cf4b50b8f975930fca294b7442b28",
+    "ocean.css": "f0c9d84c0ecbed1bbfa684fd475b8297fc954ab685e3f67e104b9a3983b7d90e",
+    "styles.css": "06dc43ce87e68bd6a015128ce7e022403c84f79f09a2f36c51f607b651b94742",
+    "src/app.js": "efbece41b1e8e5936737596189dcf37694b01fc10a98cec40ffca7a26f08d59f",
+    "src/aiWorker.js": "30d6c19fcf2d55133f2c2548186dd3c67e379ded9f20fe6ea3333f1a53b24bce",
+    "src/home.js": "19e2f117c41947edb07bd2770414816a0d38ece9a1855f14a3fed8c5ac3d2aaf"
+  },
+  "limitations": "No physical-device touch or sustained device performance/audio validation"
 }

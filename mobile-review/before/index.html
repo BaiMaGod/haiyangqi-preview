@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#061d31" />
+    <title>海洋棋：海底食物链</title>
+    <link rel="stylesheet" href="./styles.css?v=6a5e36e0b7bc" />
+    <link rel="stylesheet" href="./capture.css?v=6a5e36e0b7bc" />
+    <link rel="stylesheet" href="./rank.css?v=6a5e36e0b7bc" />
+    <link rel="stylesheet" href="./home.css?v=6a5e36e0b7bc" />
+    <link rel="stylesheet" href="./battle.css?v=6a5e36e0b7bc" />
+  <link rel="stylesheet" href="./rogue.css?v=6a5e36e0b7bc" />
+    <link rel="stylesheet" href="./ocean.css?v=6a5e36e0b7bc" />
+  </head>
+  <body class="home-active">
+    <div class="ocean-bg" aria-hidden="true">
+      <span class="bubble b1"></span><span class="bubble b2"></span><span class="bubble b3"></span>
+      <span class="bubble b4"></span><span class="bubble b5"></span>
+    </div>
+
+    <section id="home-screen" class="home-screen" aria-label="海洋棋游戏首页">
+      <div class="home-layout">
+        <header class="home-hud">
+          <button id="home-profile" type="button" class="home-player-art-wrap" aria-label="查看我的段位">
+            <img class="home-player-art" src="./assets/home/v4/runtime/panels/player.webp" alt="" decoding="async" />
+            <span class="home-player-name">海洋棋士</span>
+            <span class="home-player-rank-line"><b id="home-rank-name">棋士</b><small id="home-rank-points">0 / 1</small></span>
+            <span id="home-rank-track" class="home-rank-track" role="progressbar" aria-label="段位晋级进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="home-rank-progress"></i></span>
+          </button>
+
+        </header>
+        <div class="home-showcase">
+          <img class="home-logo-art" src="./assets/home/v4/runtime/logo/home_logo_highres.webp" alt="海洋棋" fetchpriority="high" decoding="async" />
+          <div class="home-stage" aria-hidden="true">
+            <img class="stage-ruins" src="./assets/home/v4/runtime/decor/ruined_columns.webp" alt="" decoding="async" />
+            <img class="stage-bubbles" src="./assets/home/v4/runtime/effects/bubble_group.webp" alt="" decoding="async" />
+            <img class="stage-dolphin" src="./assets/home/v4/runtime/characters/dolphin.webp" alt="" decoding="async" />
+            <img class="stage-shark" src="./assets/home/v4/runtime/characters/shark.webp" alt="" decoding="async" />
+            <img class="stage-orca" src="./assets/home/v3/orca.webp" alt="" fetchpriority="high" decoding="async" />
+            <img class="stage-jellyfish" src="./assets/home/v4/runtime/characters/jellyfish.webp" alt="" decoding="async" />
+            <img class="stage-clownfish" src="./assets/home/v3/clownfish.webp" alt="" decoding="async" />
+            <img class="stage-board" src="./assets/home/v4/runtime/board/luminous_board_scene.webp" alt="" fetchpriority="high" decoding="async" />
+            <img class="stage-octopus" src="./assets/home/v3/octopus.webp" alt="" decoding="async" />
+            <img class="stage-turtle" src="./assets/home/v3/turtle.webp" alt="" decoding="async" />
+            <img class="stage-crab" src="./assets/home/v3/crab.webp" alt="" decoding="async" />
+            <img class="stage-puffer" src="./assets/home/v3/puffer.webp" alt="" decoding="async" />
+            <img class="stage-lobster" src="./assets/home/v4/runtime/characters/lobster.webp" alt="" decoding="async" />
+            <img class="stage-wave" src="./assets/home/v4/runtime/effects/blue_wave.webp" alt="" decoding="async" />
+          </div>
+
+        </div>
+        <nav class="home-actions" aria-label="首页功能">
+          <div class="home-primary-modes">
+            <button id="home-start" class="home-image-button" type="button" aria-label="普通模式"><img src="./assets/home/v4/runtime/buttons/normal-mode-v1.webp" alt="普通模式" decoding="async" /></button>
+            <button id="home-duo" class="home-image-button" type="button" aria-label="肉鸽模式"><img src="./assets/home/v4/runtime/buttons/rogue-mode-v1.webp" alt="肉鸽模式" decoding="async" /></button>
+          </div>
+          <p id="home-resume-hint" class="home-resume-hint" hidden>对局进行中 · 点击对应模式继续</p>
+          <div class="home-utility-modes">
+            <button id="home-tutorial" class="secondary-btn ocean-tool" type="button" aria-label="规则与图鉴">规则</button>
+            <button id="rank-button" class="secondary-btn ocean-tool" type="button">段位说明</button>
+            <button id="home-settings" class="secondary-btn ocean-tool" type="button">设置</button>
+          </div>
+        </nav>
+      </div>
+      <div id="home-toast" class="home-toast" role="status" aria-live="polite"></div>
+    </section>
+
+    <dialog id="home-settings-dialog" class="rules-dialog home-dialog">
+      <div class="dialog-head"><h2>首页设置</h2><button type="button" data-home-close aria-label="关闭设置">×</button></div>
+      <div class="home-dialog-body"><label class="home-setting"><span><b>首页动画</b><small>角色漂浮、气泡与海底光线</small></span><input id="home-animation-toggle" type="checkbox" checked /></label><p class="home-dialog-note">设置会保存在当前设备。</p></div>
+    </dialog>
+
+
+    <main class="game-shell">
+      <header class="topbar">
+        <div class="battle-brand">
+          <img src="./assets/home/v4/runtime/logo/home_logo_highres.webp" alt="海洋棋" class="battle-logo" />
+          <div><p class="eyebrow">深海竞技场 · <span id="battle-rank">棋士</span></p><h1><b id="battle-mode-title">普通对局</b> <span>40枚棋子 · 双方各20枚</span></h1></div>
+        </div>
+        <div class="top-actions">
+          <button id="restart-button" class="secondary-btn" aria-label="重新开局" type="button">重开</button>
+          <button id="home-return" class="secondary-btn" type="button">首页</button>
+          <button id="rules-button" class="secondary-btn">规则</button>
+        </div>
+      </header>
+
+      <section class="hud" aria-label="对局信息">
+        <article class="team-card player-card">
+          <div class="avatar battle-player-avatar" aria-label="玩家头像"><img src="./assets/home/v4/runtime/panels/player.webp" alt="" /></div>
+          <div class="team-identity">
+            <strong class="battle-player-name">海洋棋士</strong>
+            <span class="identity-detail"><span id="player-faction">等待首翻</span><span class="hud-rank">棋士</span></span>
+          </div>
+          <div class="remaining"><b id="player-remaining">20</b><span id="player-remaining-detail">总剩余（含暗牌）</span></div>
+        </article>
+
+        <article class="turn-card">
+          <span id="turn-badge" data-turn="human">你的回合</span>
+          <p id="status">翻开任意暗牌，它的阵营就是你的阵营。</p>
+          <div class="mini-stats"><span id="mode-label" class="mode-label">普通模式</span><span>行动 <b id="move-count">0</b></span><span>选择 <b id="selected-info">未选择</b></span></div>
+        </article>
+
+        <article class="team-card ai-card">
+          <div class="avatar battle-ai-avatar"><img id="opponent-avatar" src="./assets/pieces/orca.webp" alt="虎鲸头像" /></div>
+          <div class="team-identity">
+            <strong id="opponent-name">听海漫游</strong>
+            <span class="identity-detail"><span id="ai-faction" class="opponent-faction">等待首翻</span><span class="hud-rank">棋士</span></span>
+          </div>
+          <div class="remaining"><b id="ai-remaining">20</b><span id="ai-remaining-detail">总剩余（含暗牌）</span></div>
+        </article>
+      </section>
+
+      <section class="board-stage" aria-label="对局棋盘区域">
+      <div class="board-wrap"><span class="board-corner corner-tl" aria-hidden="true"></span><span class="board-corner corner-tr" aria-hidden="true"></span><span class="board-corner corner-bl" aria-hidden="true"></span><span class="board-corner corner-br" aria-hidden="true"></span>
+        <div id="board" class="board" role="grid" aria-label="海洋棋棋盘"></div>
+      </div>
+      </section>
+
+      <nav class="battle-tools" aria-label="对局操作" hidden>
+        <button id="rogue-button" class="secondary-btn" hidden type="button">奇遇</button>
+      </nav>
+    </main>
+
+    <dialog id="match-screen" class="match-screen" aria-labelledby="match-title" aria-describedby="match-caption">
+      <div class="match-content">
+        <p class="match-eyebrow" id="match-mode">普通模式 · 深海竞技场</p>
+        <h2 id="match-title">深海对决</h2>
+        <div class="match-versus">
+          <article class="match-contender match-you">
+            <span class="match-side-label">你</span>
+            <div class="avatar battle-player-avatar match-avatar"><img src="./assets/home/v4/runtime/panels/player.webp" alt="你的头像" /></div>
+            <strong>海洋棋士</strong><span id="match-player-rank" class="match-rank">棋士</span>
+          </article>
+          <div class="match-vs" aria-label="对阵"><span>VS</span></div>
+          <article class="match-contender match-them">
+            <span class="match-side-label">对手</span>
+            <div class="avatar match-avatar"><img id="match-opponent-avatar" src="./assets/pieces/orca.webp" alt="对手头像" /></div>
+            <strong id="match-opponent-name">听海漫游</strong><span id="match-opponent-rank" class="match-rank">棋士</span>
+          </article>
+        </div>
+        <p id="match-caption" class="match-caption" role="status">即将开局 · <b id="match-countdown">1</b></p>
+        <div class="match-progress" aria-hidden="true"><i></i></div>
+        <p class="match-tip">首翻定阵营 · 大吃小 · 藤壶克虎鲸</p>
+      </div>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div id="result-overlay" class="result-overlay" aria-live="assertive">
+      <div class="result-card ranked-result-card" role="dialog" aria-modal="true" aria-labelledby="result-title">
+        <span class="result-icon" aria-hidden="true"><img id="result-animal" src="./assets/pieces/orca.webp" alt=""/></span><p class="result-eyebrow" id="result-mode-label">深海竞技场</p>
+        <h2 id="result-title">你赢了！</h2>
+        <p id="result-desc"></p>
+        <div class="result-rank-box">
+          <strong id="result-rank-change" data-change="same">棋士</strong>
+          <div class="result-exp-line"><span id="result-exp-breakdown">本局胜利 +1</span><b id="result-exp-delta" data-delta="up">+1 胜点</b></div>
+          <div class="rank-progress-track result-progress"><span id="result-rank-progress"></span></div>
+          <small id="result-rank-progress-text">棋士 · 0 / 1 胜点</small>
+          <small id="result-protection"></small>
+        </div>
+        <div id="result-build" class="result-build" hidden></div><div class="result-actions"><button id="result-restart" class="primary-btn">再来一局</button>
+        <button id="result-home" class="secondary-btn" type="button">返回首页</button></div>
+      </div>
+    </div>
+
+    <dialog id="rules-dialog" class="rules-dialog">
+      <div class="dialog-head"><h2>游戏规则</h2><button id="close-rules" aria-label="关闭">×</button></div>
+      <div class="ocean-tabs" role="tablist" aria-label="规则与图鉴"><button type="button" role="tab" id="tab-rules" data-rules-tab="rules-howto" aria-controls="rules-howto" aria-selected="true" tabindex="0">游戏规则</button><button type="button" role="tab" id="tab-species" data-rules-tab="rules-species" aria-controls="rules-species" aria-selected="false" tabindex="-1">生物图鉴</button></div>
+      <section id="rules-howto" role="tabpanel" aria-labelledby="tab-rules"><ol>
+        <li><b>首翻定阵营：</b>你第一次翻出的棋子属于哪一方，你就控制哪一方。</li>
+        <li><b>每回合只做一件事：</b>翻一张暗牌，或让己方棋子上下左右移动一格，或吃掉相邻敌子。</li>
+        <li><b>大吃小：</b>8级虎鲸一路压到1级藤壶；同等级可以互吃。</li>
+        <li><b>唯一例外：</b>1级藤壶可以吃8级虎鲸，而虎鲸不能吃藤壶。</li>
+        <li><b>段位胜点：</b>普通模式赢棋 +1 胜点、输棋 -1 胜点；匹配同段位对手。肉鸽模式不影响段位胜点。</li>
+        <li><b>晋级保护：</b>晋级后的两场对局不会掉回上一段。</li>
+        <li><b>重开：</b>确定阵营后中途重新开局，普通模式按失败结算 -1 胜点；肉鸽模式记录本局失败。</li>
+        <li><b>获胜：</b>消灭对方全部棋子。</li>
+      </ol>
+      <p class="dialog-note">暗牌翻开前，双方都无法得知它的阵营和等级。</p>
+    <section id="rogue-rules" hidden><h3>肉鸽模式</h3><p>每次主动吃子有20%概率触发三选一；奇遇连连提高至30%。每方最多获得3项，本局有效。技能在“奇遇”中使用，选择期间暂停行动。</p><p>献祭标记公开显示。“以小博大”被同级或相差1级敌棋吃掉时，双方死亡；反伤不会再次触发奇遇。双方最后棋子同归于尽为和棋。</p><p>肉鸽战绩单独记录，不影响普通段位胜点。</p></section></section>
+      <section id="rules-species" class="rules-species" role="tabpanel" aria-labelledby="tab-species" hidden><p class="dialog-note">高等级可吃低等级，同级可互吃。1级藤壶可吃8级虎鲸，虎鲸不能吃藤壶。</p><div id="legend" class="legend" aria-label="海洋生物等级图鉴"></div></section>
+    </dialog>
+
+    <dialog id="rank-dialog" class="rules-dialog rank-dialog">
+      <div class="dialog-head"><div><h2>段位之路</h2><p id="rank-dialog-summary" class="dialog-summary">当前 棋士</p></div><button id="close-rank" aria-label="关闭">×</button></div>
+      <section id="debug-panel" class="debug-panel" aria-label="Debug 段位调试" hidden>
+        <span class="debug-badge">DEBUG</span>
+        <label class="debug-rank-field">
+          <span>测试段位</span>
+          <select id="debug-rank-select" aria-label="选择测试段位"></select>
+        </label>
+        <button id="debug-apply-rank" class="debug-apply-btn" type="button">应用并重开</button>
+        <small id="debug-status">Debug 模式不会修改正常段位存档</small>
+      </section>
+      <section class="rank-panel" aria-label="段位信息">
+        <div class="rank-emblem" aria-hidden="true">棋</div>
+        <div class="rank-main">
+          <div class="rank-heading"><strong id="rank-name">棋士</strong><span id="rank-meta">历史最高 棋士</span></div>
+          <div class="rank-progress-track"><span id="rank-progress"></span></div>
+          <div class="rank-sub"><span id="rank-progress-text">0 / 1 胜点</span><span id="rank-protection">当前连胜 0</span></div>
+          <small id="rank-record">胜 0 · 负 0 · 和 0 · 胜率 0%</small>
+        </div>
+      </section>
+      <div id="rank-ladder" class="rank-ladder"></div>
+      <p class="dialog-note">共 20 个段位。晋级门槛严格按 1、2、4、8、16、32……逐级翻倍；根据当前段位匹配同段位对手。</p>
+    </dialog>
+
+    <aside id="skill-target" class="skill-target" role="status" hidden><span id="skill-target-label"></span><button id="skill-target-cancel" type="button" class="secondary-btn">取消</button></aside>
+    <dialog id="game-confirm" class="rules-dialog confirm-dialog"><div class="dialog-head"><h2 id="confirm-title">重新开局？</h2></div><p id="confirm-description"></p><form method="dialog" class="confirm-actions"><button id="confirm-cancel" class="secondary-btn" value="cancel" autofocus>继续对局</button><button id="confirm-accept" class="primary-btn" value="accept">确认重开</button></form></dialog>
+    <dialog id="rogue-dialog" class="rogue-dialog"><header><h2 id="rogue-title">本局奇遇</h2><div class="rogue-dialog-actions"><button id="rogue-home" type="button">首页</button><button id="rogue-close" type="button">关闭</button></div></header><div id="rogue-body"></div></dialog><span id="rogue-notice" class="sr-only" aria-live="polite"></span>
+    <script type="module" src="./src/app.js?v=6a5e36e0b7bc"></script>
+    <script type="module" src="./src/home.js?v=6a5e36e0b7bc"></script>
+  </body>
+</html>
+
+
+
+
+

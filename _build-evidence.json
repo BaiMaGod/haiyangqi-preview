@@ -1,6 +1,6 @@
 {
-  "sourceCommit": "6e62e6b96174484f1418f3a0ce04fb81f4fb787d",
-  "version": "6a5e36e0b7bc",
+  "sourceCommit": "974d2cfc80e3c76fcd39e099c8bd90a6bc4bf72e",
+  "version": "015ff31de301",
   "buildType": "existing-static-web-esbuild",
   "ruleTests": {
     "passed": 86,
@@ -10,6 +10,14 @@
     [
       320,
       568
+    ],
+    [
+      360,
+      640
+    ],
+    [
+      393,
+      760
     ],
     [
       390,
@@ -24,20 +32,20 @@
       768
     ]
   ],
-  "browserChecks": "Both modes: new illustrated HUD, live text/portrait/count separation, real flip/AI response, restart cancel/confirm and resume. VS timer1000ms, progress1s and label1.",
+  "browserChecks": "Before/after, normal/rogue: 24 settled DOM measurements; no page overflow, controls>=44px, name/count separation, square avatars. Mobile plate end caps scale uniformly to300x100 from1086x362. Real flip/AI response in both modes, rogue resume/restart. Skill prompt/cancel real input at393x760 and320x568 with development-only fixture starting state.",
   "files": {
-    "ocean.css": "c2807a1478f05194d9bee99d436e6cb0500f57447f9d7089b2c5065ca2ccebba",
-    "rogue.css": "115aa11518b8d19ac6a0b9c5aa63aa3e2d0d3ec0670d916818c1afa55ffa82c5",
+    "index.html": "5d9f6574f7312e9b5fc8b91b3e59a82e265af2ce9a1796283f2ad521394e1eab",
+    "ocean.css": "88047a3f837d3bbf8c395e8a97532a996cf58f4173ceddcb0878e189893a2f8e",
     "battle.css": "523471f17dff06f433eac96adc7c1a1c7157b61e70d24058fbafc77bae7de258",
     "capture.css": "163d3e5488509a7ef54e1fb7d1086869129c3fb3852dd6da5b04c76c5e1938f3",
+    "rogue.css": "115aa11518b8d19ac6a0b9c5aa63aa3e2d0d3ec0670d916818c1afa55ffa82c5",
+    "rank.css": "e54435a17c3ff9240251ca7f4421935b7b9cf4b50b8f975930fca294b7442b28",
     "styles.css": "06dc43ce87e68bd6a015128ce7e022403c84f79f09a2f36c51f607b651b94742",
     "home.css": "10f299324ae29bd637191a93431df8b182bbb71c049acdb461a0b276795757b3",
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "rank.css": "e54435a17c3ff9240251ca7f4421935b7b9cf4b50b8f975930fca294b7442b28",
-    "index.html": "3f11dcdc6c484577f9eb40de85aca1cb0fbf625fba0326245494cc751485db10",
-    "src/home.js": "19e2f117c41947edb07bd2770414816a0d38ece9a1855f14a3fed8c5ac3d2aaf",
-    "src/app.js": "f9bca7fe14e4136c477f7948b899c7467e70fff6d6c98654c91dabde41f93b5b",
-    "src/aiWorker.js": "30d6c19fcf2d55133f2c2548186dd3c67e379ded9f20fe6ea3333f1a53b24bce"
+    "src/aiWorker.js": "30d6c19fcf2d55133f2c2548186dd3c67e379ded9f20fe6ea3333f1a53b24bce",
+    "src/app.js": "df6e32470cda272234ee3544c9f92def82779d1b3275f763909eab1f88ceb958",
+    "src/home.js": "19e2f117c41947edb07bd2770414816a0d38ece9a1855f14a3fed8c5ac3d2aaf"
   },
   "art": {
     "path": "assets/ui/ocean/identity-plate-v2.webp",
@@ -45,5 +53,5 @@
     "height": 362,
     "bytes": 81888
   },
-  "limitations": "No physical-device touch or sustained performance measurement"
+  "limitations": "Cloud Chrome embedded viewport; no Android Firefox hardware or sustained performance measurement"
 }

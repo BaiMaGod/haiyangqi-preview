@@ -1,5 +1,6 @@
 {
-  "sourceCommit": "4b83180b2d19c43aa07dc0729f2cc8163485324e",
+  "sourceCommit": "6e62e6b96174484f1418f3a0ce04fb81f4fb787d",
+  "version": "6a5e36e0b7bc",
   "buildType": "existing-static-web-esbuild",
   "ruleTests": {
     "passed": 86,
@@ -11,16 +12,8 @@
       568
     ],
     [
-      360,
-      640
-    ],
-    [
       390,
       844
-    ],
-    [
-      430,
-      932
     ],
     [
       844,
@@ -31,20 +24,26 @@
       768
     ]
   ],
-  "browserChecks": "Both modes, real flip/AI response, restart cancel/confirm, resume, mode switching, actual capture settlement/replay and rogue draft/skill targets",
+  "browserChecks": "Both modes: new illustrated HUD, live text/portrait/count separation, real flip/AI response, restart cancel/confirm and resume. VS timer1000ms, progress1s and label1.",
   "files": {
-    "capture.css": "163d3e5488509a7ef54e1fb7d1086869129c3fb3852dd6da5b04c76c5e1938f3",
+    "ocean.css": "c2807a1478f05194d9bee99d436e6cb0500f57447f9d7089b2c5065ca2ccebba",
     "rogue.css": "115aa11518b8d19ac6a0b9c5aa63aa3e2d0d3ec0670d916818c1afa55ffa82c5",
-    "index.html": "643629eb55700684b2f237e74a9b351511f58aa3127798ca5474c24fc3c0495c",
-    ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "home.css": "10f299324ae29bd637191a93431df8b182bbb71c049acdb461a0b276795757b3",
     "battle.css": "523471f17dff06f433eac96adc7c1a1c7157b61e70d24058fbafc77bae7de258",
-    "rank.css": "e54435a17c3ff9240251ca7f4421935b7b9cf4b50b8f975930fca294b7442b28",
-    "ocean.css": "f0c9d84c0ecbed1bbfa684fd475b8297fc954ab685e3f67e104b9a3983b7d90e",
+    "capture.css": "163d3e5488509a7ef54e1fb7d1086869129c3fb3852dd6da5b04c76c5e1938f3",
     "styles.css": "06dc43ce87e68bd6a015128ce7e022403c84f79f09a2f36c51f607b651b94742",
-    "src/app.js": "efbece41b1e8e5936737596189dcf37694b01fc10a98cec40ffca7a26f08d59f",
-    "src/aiWorker.js": "30d6c19fcf2d55133f2c2548186dd3c67e379ded9f20fe6ea3333f1a53b24bce",
-    "src/home.js": "19e2f117c41947edb07bd2770414816a0d38ece9a1855f14a3fed8c5ac3d2aaf"
+    "home.css": "10f299324ae29bd637191a93431df8b182bbb71c049acdb461a0b276795757b3",
+    ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "rank.css": "e54435a17c3ff9240251ca7f4421935b7b9cf4b50b8f975930fca294b7442b28",
+    "index.html": "3f11dcdc6c484577f9eb40de85aca1cb0fbf625fba0326245494cc751485db10",
+    "src/home.js": "19e2f117c41947edb07bd2770414816a0d38ece9a1855f14a3fed8c5ac3d2aaf",
+    "src/app.js": "f9bca7fe14e4136c477f7948b899c7467e70fff6d6c98654c91dabde41f93b5b",
+    "src/aiWorker.js": "30d6c19fcf2d55133f2c2548186dd3c67e379ded9f20fe6ea3333f1a53b24bce"
   },
-  "limitations": "No physical-device touch or sustained device performance/audio validation"
+  "art": {
+    "path": "assets/ui/ocean/identity-plate-v2.webp",
+    "width": 1086,
+    "height": 362,
+    "bytes": 81888
+  },
+  "limitations": "No physical-device touch or sustained performance measurement"
 }

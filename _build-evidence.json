@@ -1,57 +1,103 @@
 {
-  "sourceCommit": "974d2cfc80e3c76fcd39e099c8bd90a6bc4bf72e",
-  "version": "015ff31de301",
-  "buildType": "existing-static-web-esbuild",
-  "ruleTests": {
-    "passed": 86,
-    "failed": 0
-  },
-  "browserViewportSizes": [
-    [
-      320,
-      568
-    ],
-    [
-      360,
-      640
-    ],
-    [
-      393,
-      760
-    ],
-    [
-      390,
-      844
-    ],
-    [
-      844,
-      390
-    ],
-    [
-      1366,
-      768
-    ]
-  ],
-  "browserChecks": "Before/after, normal/rogue: 24 settled DOM measurements; no page overflow, controls>=44px, name/count separation, square avatars. Mobile plate end caps scale uniformly to300x100 from1086x362. Real flip/AI response in both modes, rogue resume/restart. Skill prompt/cancel real input at393x760 and320x568 with development-only fixture starting state.",
+  "sourceCommit": "30dae29958991da96bd53e3eb4a05101858b023c",
+  "buildType": "static-esbuild",
+  "unitTestsPassed": 120,
+  "browserSmokePassed": true,
   "files": {
-    "index.html": "5d9f6574f7312e9b5fc8b91b3e59a82e265af2ce9a1796283f2ad521394e1eab",
-    "ocean.css": "88047a3f837d3bbf8c395e8a97532a996cf58f4173ceddcb0878e189893a2f8e",
-    "battle.css": "523471f17dff06f433eac96adc7c1a1c7157b61e70d24058fbafc77bae7de258",
-    "capture.css": "163d3e5488509a7ef54e1fb7d1086869129c3fb3852dd6da5b04c76c5e1938f3",
-    "rogue.css": "115aa11518b8d19ac6a0b9c5aa63aa3e2d0d3ec0670d916818c1afa55ffa82c5",
-    "rank.css": "e54435a17c3ff9240251ca7f4421935b7b9cf4b50b8f975930fca294b7442b28",
-    "styles.css": "06dc43ce87e68bd6a015128ce7e022403c84f79f09a2f36c51f607b651b94742",
     "home.css": "10f299324ae29bd637191a93431df8b182bbb71c049acdb461a0b276795757b3",
+    "battle.css": "523471f17dff06f433eac96adc7c1a1c7157b61e70d24058fbafc77bae7de258",
+    "rogue.css": "115aa11518b8d19ac6a0b9c5aa63aa3e2d0d3ec0670d916818c1afa55ffa82c5",
+    "ocean.css": "a311b20ce55a2c0a33b2577cadc2617c8fdf8b1bd0fbbf3667239bcbfbe970a1",
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "src/aiWorker.js": "30d6c19fcf2d55133f2c2548186dd3c67e379ded9f20fe6ea3333f1a53b24bce",
-    "src/app.js": "df6e32470cda272234ee3544c9f92def82779d1b3275f763909eab1f88ceb958",
-    "src/home.js": "19e2f117c41947edb07bd2770414816a0d38ece9a1855f14a3fed8c5ac3d2aaf"
+    "styles.css": "06dc43ce87e68bd6a015128ce7e022403c84f79f09a2f36c51f607b651b94742",
+    "rank.css": "e54435a17c3ff9240251ca7f4421935b7b9cf4b50b8f975930fca294b7442b28",
+    "capture.css": "163d3e5488509a7ef54e1fb7d1086869129c3fb3852dd6da5b04c76c5e1938f3",
+    "index.html": "bd574393ce564f64640bea97653fc572fcd21ab014aaf3f435b8e123083dbf7d",
+    "src/aiWorker.js": "265ecfdd7a7210a76bcc73d22577b8a383d4ec2369f90ebbcbc25897599540bc",
+    "src/home.js": "19e2f117c41947edb07bd2770414816a0d38ece9a1855f14a3fed8c5ac3d2aaf",
+    "src/app.js": "4be3312d0715cf1c316df559004dbe91fa1a02cb3896790b510ab914e882b476",
+    "assets/ui/hidden.webp": "967051566c28b669989a7b0bd668596d71c894cbc498987aec496ed61a367204",
+    "assets/ui/ocean-ui-rogue-preview-20261021.jpg": "a6b0f4aeed9a4e29b8d268ff9bf650bb261857524041b4f3e58d06eef0eb7d0b",
+    "assets/ui/ocean-ui-followup-20261021.png": "f33ead6001af0d3ed65904064c4f795d7f6b0c8391827a4127e6b4bc62e244be",
+    "assets/pieces/shark.webp": "a45bf5963058ca71a2e7362e41d64f27895a17f0c7d57af77c9233fffc603402",
+    "assets/pieces/orca.webp": "cc414d6cb14fc63a25c0bbd87639dbc3db68dd37823674d7acba9cc4ce702522",
+    "assets/pieces/seal.webp": "a180967ebb97d67be114bd4601ed7f5b7fb5781195355052d4e624ea0f8a6aab",
+    "assets/pieces/fish.webp": "56b14512586f5e683cc519c750e634ae59330178de38cc2635bc01842a8c9f4a",
+    "assets/pieces/puffer.webp": "c4e33b7ea2b03555f3cb9b308287e2f6aa1f228cdffcf8e83c06f7749138b2fb",
+    "assets/pieces/barnacle.webp": "60b1fece81c2b8bfc0024160e2d75579c16eac60084ac03de0314a54a0969c70",
+    "assets/pieces/octopus.webp": "2e51cbb79f1d187c00c0e6b0a4d16f53fedae52d186f125eb360c55aad780d12",
+    "assets/pieces/shrimp.webp": "9313b10b19c29eb36157c0af10d05cd40c79695d72ed4cd7e87adc64318c7d83",
+    "assets/home/v3/clownfish.webp": "c491d3dd11d1d1873709492aa49731bd26df2ba6b9366328a7ea85aa4f3f1041",
+    "assets/home/v3/turtle.webp": "07b3d82b2243e59ffc0f25beb18a1195ee77d0c790950038d444f48b2cec4af4",
+    "assets/home/v3/orca.webp": "0c8ee9b14f8768f3f3c966a05548e8e143234a3b97dfd1e2ef6c2038fe98a24a",
+    "assets/home/v3/crab.webp": "f31c06dcbfe9634c25df326d922215c60e96e0ddfd1c8d9f1913ef551636c4fd",
+    "assets/home/v3/puffer.webp": "64f482d58440cec55c2326b8cce7ab06f4c6fcff4d20c43dad1fb4dfdb1c9680",
+    "assets/home/v3/octopus.webp": "960c61d4c7a11b75c53d60f6ebd7d392efda8541eb7bdee93724a468b08ebc54",
+    "assets/home/v4/runtime/entries/daily_reward.webp": "9343a677bf1fe39ec7ba3b67f274b258d66778db854ce2b4387efe279e660e3a",
+    "assets/home/v4/runtime/entries/limited_event.webp": "6e2855d82e99e9c2432b0b651140a2b5346ddbc2d8f90dd5aa4b9799d3448d43",
+    "assets/home/v4/runtime/entries/beginner_missions.webp": "6ac52f42c2b65a63e5567a0cbb4fcbe2e7b1150c1f8f08821bfff648b4e3f060",
+    "assets/home/v4/runtime/entries/activity_center.webp": "ae16254156f56d99b5d4b8c0a8b97e200d2d7d6e8cdf6b0e6ca7c6427d993686",
+    "assets/home/v4/runtime/entries/deep_sea_treasure.webp": "b2a0df980165c4e1a731f779878ed1113f81740818b02cb22b2aadf19b6dfe48",
+    "assets/home/v4/runtime/decor/ruined_columns.webp": "25139b5c72b89de45398c7c13265997d67427932bce49a75910c64425e937a3f",
+    "assets/home/v4/runtime/characters/shark.webp": "dece5aea7cc0fa0b80215d6550a1c1bb50f756c1f23bb9273b852e8f8180bab6",
+    "assets/home/v4/runtime/characters/jellyfish.webp": "1cd156a29c4f335f7831e029f2e58d5cf16e8712ae7e8717ac3788112b09a9e9",
+    "assets/home/v4/runtime/characters/lobster.webp": "b18b25f3b9ec4e78a44680c737485fa066d7ae05bbe394592e38313244e36092",
+    "assets/home/v4/runtime/characters/dolphin.webp": "5b0c0705454ef583e4898848c33e91962971f46ec7fcaefb754fb18b0c0c15e9",
+    "assets/home/v4/runtime/effects/blue_wave.webp": "b905ddef8a4a43f6db3b3a95bc058a240e37a08d9b03db16fe4d66bd72765d90",
+    "assets/home/v4/runtime/effects/bubble_group.webp": "b2eee2a004eff1cc94e66628d3023aca12f2fedc5678a17fcba230a92bf7237e",
+    "assets/home/v4/runtime/buttons/normal-mode-v1.webp": "def477221faba0eaf13eab57370ca23f7284d4b69a27b41821292e70c1676ef6",
+    "assets/home/v4/runtime/buttons/tutorial.webp": "1001948db6a6923b603942b52c613b1c0940175a6bf777f0a42533b0de395603",
+    "assets/home/v4/runtime/buttons/ranked.webp": "dc0df15e70b7cf2839ac00c040c0ee56375372cf3c36e924612f4019a78f7b2b",
+    "assets/home/v4/runtime/buttons/start.webp": "7744e03ebcb7076f22d8ffd696bc237de28615f78b57c96f9e5b9fef9401f875",
+    "assets/home/v4/runtime/buttons/duo.webp": "ef36c85abfeb3c0f52544be693b87088629febe493a6ad703d15febea9e1fd29",
+    "assets/home/v4/runtime/buttons/rogue-mode-v1.webp": "2445f12a6f16046b703139039f74c1b4d375f2f8e7c83586b9717e56631368d4",
+    "assets/home/v4/runtime/buttons/gallery.webp": "62b29b3c919d70e14d24b547f92fe84ea0fcca33dfa4e1353824faea9d9109b1",
+    "assets/home/v4/runtime/buttons/settings.webp": "3aad1da05f08a8b7dabf5d66333a8fd7d5103fc4c1bf5c1424d3932474832e59",
+    "assets/home/v4/runtime/board/luminous_board_scene.webp": "abfd5948514768b79a31ba30c362a0b06ed5aa9a292ae6491c7e091598acee2e",
+    "assets/home/v4/runtime/panels/coins.webp": "75d5598743aea385207723d50be0cbf92235e5f496b0c2868694a6cbfd170e10",
+    "assets/home/v4/runtime/panels/diamonds.webp": "288f89ab8e1a5dc87044eb161793ba6e8a118b50f77e3211e5a9053095795c62",
+    "assets/home/v4/runtime/panels/player.webp": "48f91194323f178492967c63f1b3797de246a7c78e72b5957df08050b02235c2",
+    "assets/home/v4/runtime/background/ocean_landscape.webp": "9bfe6e8574e856298883f20ff1280e5c1d9d75a04a367f232864122e7217e526",
+    "assets/home/v4/runtime/background/ocean_portrait.webp": "8ffe593d1614cb1039047716af0510f5b901a9a909d70df164d5159e6398cc74",
+    "assets/home/v4/runtime/logo/home_logo_highres.webp": "d5ee2190cd53203ee6d7a416e28ad52bf986074ae9977e5a93e138675eeb51c5",
+    "assets/home/v4/runtime/icons/mail.webp": "5f945aebf10109eb092fb88697d913830cc59acb9ade853d653119c29d7957fa",
+    "assets/home/v4/runtime/icons/settings.webp": "c44d12c0172118a176fb9d066c6d1ac93838eec5f569dd842ec479296892c4e8",
+    "assets/ui/ocean/crest.webp": "38c6024e241b87795c24df72b7f963b8940c3dc508147d42df53f107f3ee25a0",
+    "assets/ui/ocean/corner-br.webp": "5340ec524afbebdca8144c19dc81060289887dcf49509aa367aa201bf63f4520",
+    "assets/ui/ocean/panel.webp": "d3fe8ac075c2ac14282612f76a044e9018bb0d22eeb6976b4baa3a0c0d37e0cc",
+    "assets/ui/ocean/corner-tl.webp": "22c09114ea17fc455d59d6b0666e93bbc6bc8ecc581b303f953792fc1dddef0a",
+    "assets/ui/ocean/button-gold.webp": "0a50b2dcf6e3828d656e6fdc3fe6758e8efcb145cb6c5045f9e158916610523a",
+    "assets/ui/ocean/corner-bl.webp": "93088d36b7d09000a5b26ed9b634f44b35fb6931e3eec62d223c8782fd3a20fd",
+    "assets/ui/ocean/identity-plate-v2.webp": "fbf06e177aedb614d120db54fa3a01d43630828b91842cc6e37d00936fe793ba",
+    "assets/ui/ocean/corner-tr.webp": "263482ed3c67787f1b37b80669711574dc74a4dabf54361d3259251e1d08771a",
+    "assets/ui/ocean/button-blue.webp": "8ab076e8c33c7a6155793a2a3340ee97d7af324e8db69276e0b35e7c802412ee"
   },
-  "art": {
-    "path": "assets/ui/ocean/identity-plate-v2.webp",
-    "width": 1086,
-    "height": 362,
-    "bytes": 81888
-  },
-  "limitations": "Cloud Chrome embedded viewport; no Android Firefox hardware or sustained performance measurement"
+  "browserSmokeViewport": [
+    "390x844",
+    "375x667"
+  ],
+  "browserSmoke": [
+    {
+      "width": 390,
+      "height": 844,
+      "actions": 99,
+      "drafts": 1,
+      "outcome": "draw",
+      "pointText": "0 胜点",
+      "rankPoints": 0,
+      "noDuplicateSettlement": true,
+      "errors": []
+    },
+    {
+      "width": 375,
+      "height": 667,
+      "actions": 60,
+      "drafts": 2,
+      "outcome": "draw",
+      "pointText": "0 胜点",
+      "rankPoints": 0,
+      "noDuplicateSettlement": true,
+      "errors": []
+    }
+  ]
 }

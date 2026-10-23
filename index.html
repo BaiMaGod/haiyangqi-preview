@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#061d31" />
     <title>海洋棋：海底食物链</title>
-    <link rel="stylesheet" href="./styles.css?v=015ff31de301" />
-    <link rel="stylesheet" href="./capture.css?v=015ff31de301" />
-    <link rel="stylesheet" href="./rank.css?v=015ff31de301" />
-    <link rel="stylesheet" href="./home.css?v=015ff31de301" />
-    <link rel="stylesheet" href="./battle.css?v=015ff31de301" />
-  <link rel="stylesheet" href="./rogue.css?v=015ff31de301" />
-    <link rel="stylesheet" href="./ocean.css?v=015ff31de301" />
+    <link rel="stylesheet" href="./styles.css?v=b0559dff89d6" />
+    <link rel="stylesheet" href="./capture.css?v=b0559dff89d6" />
+    <link rel="stylesheet" href="./rank.css?v=b0559dff89d6" />
+    <link rel="stylesheet" href="./home.css?v=b0559dff89d6" />
+    <link rel="stylesheet" href="./battle.css?v=b0559dff89d6" />
+  <link rel="stylesheet" href="./rogue.css?v=b0559dff89d6" />
+    <link rel="stylesheet" href="./ocean.css?v=b0559dff89d6" />
   </head>
   <body class="home-active">
     <div class="ocean-bg" aria-hidden="true">
@@ -59,6 +59,9 @@
           <div class="home-utility-modes">
             <button id="home-tutorial" class="secondary-btn ocean-tool" type="button" aria-label="规则与图鉴">规则</button>
             <button id="rank-button" class="secondary-btn ocean-tool" type="button">段位说明</button>
+            <button id="tap-leaderboard" class="secondary-btn ocean-tool" type="button" hidden>排行榜</button>
+            <button id="tap-achievements" class="secondary-btn ocean-tool" type="button" hidden>成就</button>
+            <button id="tap-share" class="secondary-btn ocean-tool" type="button" hidden>分享</button>
             <button id="home-settings" class="secondary-btn ocean-tool" type="button">设置</button>
           </div>
         </nav>
@@ -81,6 +84,7 @@
         <div class="top-actions">
           <button id="restart-button" class="secondary-btn" aria-label="重新开局" type="button">重开</button>
           <button id="home-return" class="secondary-btn" type="button">首页</button>
+          <button id="hint-button" class="secondary-btn" type="button" hidden>提示</button>
           <button id="rules-button" class="secondary-btn">规则</button>
         </div>
       </header>
@@ -98,6 +102,7 @@
 
         <article class="turn-card">
           <span id="turn-badge" data-turn="human">你的回合</span>
+          <p id="tactical-hint" class="tactical-hint" role="status" hidden></p>
           <p id="status">翻开任意暗牌，它的阵营就是你的阵营。</p>
         </article>
 
@@ -161,6 +166,7 @@
           <small id="result-protection"></small>
         </div>
         <div id="result-build" class="result-build" hidden></div><div class="result-actions"><button id="result-restart" class="primary-btn">再来一局</button>
+        <button id="result-share" class="secondary-btn" type="button">分享战绩</button>
         <button id="result-home" class="secondary-btn" type="button">返回首页</button></div>
       </div>
     </div>
@@ -173,13 +179,13 @@
         <li><b>每回合只做一件事：</b>翻一张暗牌，或让己方棋子上下左右移动一格，或吃掉相邻敌子。</li>
         <li><b>大吃小：</b>8级虎鲸一路压到1级藤壶；同等级可以互吃。</li>
         <li><b>唯一例外：</b>1级藤壶可以吃8级虎鲸，而虎鲸不能吃藤壶。</li>
-        <li><b>段位胜点：</b>普通模式赢棋 +1 胜点、输棋 -1 胜点；匹配同段位对手。肉鸽模式不影响段位胜点。</li>
+        <li><b>段位胜点：</b>普通模式与肉鸽模式共用段位：赢棋 +1 胜点、输棋 -1 胜点、和棋不变；匹配同段位对手。</li>
         <li><b>晋级保护：</b>晋级后的两场对局不会掉回上一段。</li>
-        <li><b>重开：</b>确定阵营后中途重新开局，普通模式按失败结算 -1 胜点；肉鸽模式记录本局失败。</li>
+        <li><b>重开：</b>确定阵营后中途重新开局，两种模式均按失败结算 -1 胜点；沿用晋级保护规则。</li>
         <li><b>获胜：</b>消灭对方全部棋子。</li>
       </ol>
       <p class="dialog-note">暗牌翻开前，双方都无法得知它的阵营和等级。</p>
-    <section id="rogue-rules" hidden><h3>肉鸽模式</h3><p>每次主动吃子有20%概率触发三选一；奇遇连连提高至30%。每方最多获得3项，本局有效。技能在“奇遇”中使用，选择期间暂停行动。</p><p>献祭标记公开显示。“以小博大”被同级或相差1级敌棋吃掉时，双方死亡；反伤不会再次触发奇遇。双方最后棋子同归于尽为和棋。</p><p>肉鸽战绩单独记录，不影响普通段位胜点。</p></section></section>
+    <section id="rogue-rules" hidden><h3>肉鸽模式</h3><p>每次主动吃子有20%概率触发三选一；奇遇连连提高至30%。每方最多获得3项，本局有效。技能在“奇遇”中使用，选择期间暂停行动。</p><p>献祭标记公开显示。“以小博大”被同级或相差1级敌棋吃掉时，双方死亡；反伤不会再次触发奇遇。双方最后棋子同归于尽为和棋。</p><p>肉鸽模式同样结算段位胜点：胜利 +1、失败 -1、和棋不变，与普通模式共用段位；肉鸽战绩另行保留。</p></section></section>
       <section id="rules-species" class="rules-species" role="tabpanel" aria-labelledby="tab-species" hidden><p class="dialog-note">高等级可吃低等级，同级可互吃。1级藤壶可吃8级虎鲸，虎鲸不能吃藤壶。</p><div id="legend" class="legend" aria-label="海洋生物等级图鉴"></div></section>
     </dialog>
 
@@ -210,10 +216,12 @@
     <aside id="skill-target" class="skill-target" role="status" hidden><span id="skill-target-label"></span><button id="skill-target-cancel" type="button" class="secondary-btn">取消</button></aside>
     <dialog id="game-confirm" class="rules-dialog confirm-dialog"><div class="dialog-head"><h2 id="confirm-title">重新开局？</h2></div><p id="confirm-description"></p><form method="dialog" class="confirm-actions"><button id="confirm-cancel" class="secondary-btn" value="cancel" autofocus>继续对局</button><button id="confirm-accept" class="primary-btn" value="accept">确认重开</button></form></dialog>
     <dialog id="rogue-dialog" class="rogue-dialog"><header><h2 id="rogue-title">本局奇遇</h2><div class="rogue-dialog-actions"><button id="rogue-home" type="button">首页</button><button id="rogue-close" type="button">关闭</button></div></header><div id="rogue-body"></div></dialog><span id="rogue-notice" class="sr-only" aria-live="polite"></span>
-    <script type="module" src="./src/app.js?v=015ff31de301"></script>
-    <script type="module" src="./src/home.js?v=015ff31de301"></script>
+    <dialog id="share-dialog" class="rules-dialog share-dialog" aria-labelledby="share-title"><div class="dialog-head"><h2 id="share-title">分享海洋棋</h2><button id="share-close" type="button" aria-label="关闭分享">×</button></div><p id="share-status" role="status"></p><img id="share-preview" alt="海洋棋分享卡片" hidden/><div class="share-actions"><button id="share-send" class="primary-btn" type="button" hidden>分享</button><button id="share-save" class="secondary-btn" type="button" disabled>保存图片</button></div></dialog>
+    <script type="module" src="./src/app.js?v=b0559dff89d6"></script>
+    <script type="module" src="./src/home.js?v=b0559dff89d6"></script>
   </body>
 </html>
+
 
 
 
